@@ -1,10 +1,19 @@
 import React, { useState } from 'react';
-import { View, Text, TextInput, Button, Alert, TouchableOpacity, CheckBox } from 'react-native';
+import {
+  View,Text,TextInput,Alert,TouchableOpacity,Pressable,StyleSheet,Image, Dimensions,ScrollView,KeyboardAvoidingView,Platform
+} from 'react-native';
 import auth from '@react-native-firebase/auth';
 import AsyncStorage from '@react-native-async-storage/async-storage';
 import api from '../../api/axios';
+import { useNavigation } from '@react-navigation/native';
+import LoginScreen from './LoginScreen';
+
+const { width, height } = Dimensions.get('window');
 
 const SignUpScreen = () => {
+  console.log('[SignUpScreen] mounted');
+  const navigation = useNavigation();
+
   const [fullName, setFullName] = useState('');
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
@@ -20,11 +29,8 @@ const SignUpScreen = () => {
       const userCredential = await auth().createUserWithEmailAndPassword(email, password);
       await userCredential.user.updateProfile({ displayName: fullName });
       const idToken = await userCredential.user.getIdToken();
-
       await AsyncStorage.setItem('userToken', idToken);
-
       await api.post('/auth/signup', { idToken });
-
       Alert.alert('회원가입 성공', '서버 등록 완료!');
     } catch (error) {
       console.error(error);
@@ -33,54 +39,202 @@ const SignUpScreen = () => {
   };
 
   return (
-    <View style={{ padding: 20 }}>
-      <Text style={{ fontSize: 24, fontWeight: 'bold', textAlign: 'center' }}>Create an Account</Text>
-      <Text style={{ textAlign: 'center', marginBottom: 20 }}>Sign up now to get started with an account.</Text>
+    <KeyboardAvoidingView
+      style={{ flex: 1 }}
+      behavior={Platform.OS === 'ios' ? 'padding' : undefined}
+    >
+    <ScrollView contentContainerStyle={styles.container}>
+    <View style={styles.container}>
+      <Text style={styles.header}>Create an Account</Text>
+      <Text style={styles.subheader}>Sign up now to get started with an account.</Text>
 
-      {/* Full Name */}
-      <TextInput
-        placeholder="Full Name"
-        value={fullName}
-        onChangeText={setFullName}
-        style={{ marginBottom: 10, borderWidth: 1, padding: 10 }}
-      />
+      {/* 구글 버튼 (로직은 미구현) */}
+      <TouchableOpacity style={styles.googleButton}>
+        <Image source={require('../../assets/images/google-logo.png')} 
+        style={styles.googleLogo} />
+      </TouchableOpacity>
 
-      {/* Email */}
-      <TextInput
-        placeholder="Email Address"
-        value={email}
-        onChangeText={setEmail}
-        autoCapitalize="none"
-        keyboardType="email-address"
-        style={{ marginBottom: 10, borderWidth: 1, padding: 10 }}
-      />
-
-      {/* Password */}
-      <TextInput
-        placeholder="Password"
-        value={password}
-        onChangeText={setPassword}
-        secureTextEntry
-        style={{ marginBottom: 10, borderWidth: 1, padding: 10 }}
-      />
-
-      {/* Terms Checkbox */}
-      <View style={{ flexDirection: 'row', alignItems: 'center', marginBottom: 10 }}>
-        <CheckBox value={agreeTerms} onValueChange={setAgreeTerms} />
-        <Text> I have read and agree to the <Text style={{ color: 'orange' }}>Terms of Service</Text></Text>
+      <View style={styles.orContainer}>
+        <View style={styles.line} />
+        <Text style={styles.orText}>OR</Text>
+        <View style={styles.line} />
       </View>
 
-      {/* Sign Up Button */}
-      <Button title="Sign Up" onPress={handleSignup} />
+      <View style={styles.inputContainer}>
+        <Text style={styles.inputLabel}>Full Name</Text>
+        <TextInput
+          value={fullName}
+          onChangeText={setFullName}
+          style={styles.input}
+        />
+      </View>
+      <View style={styles.inputContainer}>
+        <Text style={styles.inputLabel}>Email Address</Text>
+        <TextInput
+          value={email}
+          onChangeText={setEmail}
+          autoCapitalize="none"
+          keyboardType="email-address"
+          style={styles.input}
+        />
+      </View>
+      <View style={styles.inputContainer}>
+        <Text style={styles.inputLabel}>Password</Text>
+        <TextInput
+          value={password}
+          onChangeText={setPassword}
+          secureTextEntry
+          style={styles.input}
+        />
+      </View>
 
-      {/* Log in Link */}
-      <TouchableOpacity onPress={() => Alert.alert('로그인 화면으로 이동')}>
-        <Text style={{ textAlign: 'center', marginTop: 20 }}>
-          Already have an account? <Text style={{ color: 'orange' }}>Log in</Text>
-        </Text>
+      <View style={styles.checkboxRow}>
+          <TouchableOpacity onPress={() => setAgreeTerms(!agreeTerms)} style={styles.checkboxContainer}>
+            <View style={[styles.checkbox, agreeTerms && styles.checkboxChecked]}>
+              {agreeTerms && <Text style={styles.checkmark}>✓</Text>}
+            </View>
+            <Text style={styles.rememberText}>I agree to the <Text style={styles.link}>Terms of Service</Text></Text>
+          </TouchableOpacity>
+        </View>
+      </View>
+      {/* Sign Up Button */}
+      <TouchableOpacity style={styles.signupButton} onPress={handleSignup}>
+        <Text style={styles.signupText}>Sign Up</Text>
       </TouchableOpacity>
-    </View>
+
+      {/* Login Link */}
+      <View style={styles.loginRow}>
+        <Text>Already have an account? </Text>
+        <TouchableOpacity onPress={() => navigation.navigate('LoginScreen')}>
+          <Text style={styles.login}>Log In</Text>
+        </TouchableOpacity>
+      </View>
+    </ScrollView>
+    </KeyboardAvoidingView>
   );
 };
+
+const styles = StyleSheet.create({
+  scrollContainer: {
+    paddingBottom: height * 0.05,
+  },
+  container: {
+    flex: 1,
+    paddingTop: height * 0.1,
+    paddingHorizontal: 24,
+    backgroundColor: '#F4F0ED',
+  },
+  header: {
+    fontSize: 26,
+    fontWeight: '700',
+    color: '#2E2E2E',
+    textAlign: 'center',
+    marginBottom: height * 0.01,
+  },
+  subheader: {
+    fontSize: 14,
+    color: '#666',
+    textAlign: 'center',
+    marginBottom: height * 0.03,
+  },
+  googleButton: {
+    alignSelf: 'center',
+    marginBottom: height * 0.03,
+  },
+  googleLogo: {
+    width: width * 0.1,
+    height: width * 0.1,
+    resizeMode: 'contain',
+  },
+  orContainer: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    marginBottom: height * 0.025,
+  },
+  line: {
+    flex: 1,
+    height: 1,
+    backgroundColor: '#ccc',
+  },
+  orText: {
+    marginHorizontal: 10,
+    color: '#888',
+  },
+  inputContainer: {
+    marginBottom: height * 0.02,
+  },
+  inputLabel: {
+    fontSize: 13,
+    color: '#888',
+    marginBottom: 4,
+  },
+  input: {
+    borderBottomWidth: 1,
+    borderColor: '#ccc',
+    paddingVertical: 10,
+    fontSize: 16,
+    color: '#333',
+  },
+  checkboxRow: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    marginBottom: height * 0.04,
+  },
+  checkboxContainer: {
+    flexDirection: 'row',
+    alignItems: 'center',
+  },
+  checkbox: {
+    width: 18,
+    height: 18,
+    borderRadius: 4,
+    borderWidth: 1.5,
+    borderColor: '#b9b6b4',
+    marginRight: 8,
+    justifyContent: 'center',
+    alignItems: 'center',
+  },
+  checkboxChecked: {
+    backgroundColor: '#d97706',
+  },
+  checkmark: {
+    color: 'white',
+    fontSize: 13,
+    fontWeight: 'bold',
+    lineHeight: 18,
+  },
+  rememberText: {
+    color: '#333',
+    fontSize: 13,
+  },
+  link: {
+    color: '#d97706',
+    fontSize: 13,
+    fontWeight: '500',
+  },
+  signupButton: {
+    backgroundColor: '#2E2E2E',
+    paddingVertical: height * 0.025,
+    borderRadius: 999,
+    alignItems: 'center',
+    marginBottom: height * 0.02,
+    marginTop: height * 0.08,
+  },
+  signupText: {
+    color: '#FFF',
+    fontSize: 16,
+    fontWeight: 'bold',
+  },
+  loginRow: {
+    marginTop: height * 0.01,
+    flexDirection: 'row',
+    justifyContent: 'center',
+  },
+  login: {
+    fontWeight: '600',
+    color: '#ff5900',
+  },
+});
+
 
 export default SignUpScreen;

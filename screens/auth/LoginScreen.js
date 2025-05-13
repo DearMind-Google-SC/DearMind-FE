@@ -1,14 +1,13 @@
 import React, { useState } from 'react';
 import {
   View, Text, TextInput, TouchableOpacity, StyleSheet, Image,
-  Alert, CheckBox, Dimensions
+  Alert, Dimensions
 } from 'react-native';
 import auth from '@react-native-firebase/auth';
 import AsyncStorage from '@react-native-async-storage/async-storage';
 import api from '../../api/axios';
 import useAuthStore from '../../store/useAuthStore';
 
-const screenHeight = Dimensions.get('window').height;
 const { width, height } = Dimensions.get('window');
 
 const LoginScreen = () => {
@@ -32,7 +31,6 @@ const LoginScreen = () => {
   };
 
   return (
-    <>
     <View style={styles.container}>
       <Text style={styles.welcome}>Welcome!</Text>
       <Text style={styles.subtitle}>Please enter your details to start with us.</Text>
@@ -81,8 +79,6 @@ const LoginScreen = () => {
           <Text style={styles.forgot}>Forgot Password?</Text>
         </TouchableOpacity>
       </View>
-    </View>
-    <View style={styles.bottomSection}>
       <TouchableOpacity style={styles.loginButton} onPress={handleLogin}>
         <Text style={styles.loginText}>Log In</Text>
       </TouchableOpacity>
@@ -93,8 +89,7 @@ const LoginScreen = () => {
           <Text style={styles.signup}>Sign Up</Text>
         </TouchableOpacity>
       </View>
-    </View>
-    </>
+    </View>  
   );
 };
 
@@ -103,7 +98,7 @@ export default LoginScreen;
 const styles = StyleSheet.create({
   container: {
     flex: 1,
-    paddingTop: screenHeight * 0.12, // 상단에서 12%부터 시작
+    paddingTop: height * 0.12, // 상단에서 12%부터 시작
     paddingHorizontal: 24,
     backgroundColor: '#F4F0ED',
   },
@@ -114,20 +109,20 @@ const styles = StyleSheet.create({
     fontWeight: '700',
     color: '#2E2E2E',
     textAlign: 'center',
-    marginBottom: Dimensions.get('window').height * 0.0065,
+    marginBottom: height * 0.0065,
   },
   subtitle: {
     fontSize: 16,
     color: 'rgba(51, 51, 51, 0.7)',
     textAlign: 'center',
     alignSelf: 'center',
-    marginBottom: Dimensions.get('window').height * 0.0296,
+    marginBottom: height * 0.0296,
     lineHeight: 19,
   },
   googleButton: {
     alignSelf: 'center',
-    marginBottom: Dimensions.get('window').height * 0.035,
-    marginTop: Dimensions.get('window').height * 0.035,
+    marginBottom: height * 0.035,
+    marginTop: height * 0.035,
   },
   googleLogo: {
     width: width * 0.08,  // 40 / 375 = 0.106 (375 기준 비율)
@@ -137,7 +132,7 @@ const styles = StyleSheet.create({
   orContainer: {
     flexDirection: 'row',
     alignItems: 'center',
-    marginBottom: Dimensions.get('window').height * 0.0296,
+    marginBottom: height * 0.0296,
   },
   line: {
     flex: 1,
@@ -149,13 +144,12 @@ const styles = StyleSheet.create({
     color: '#888',
   },
   inputContainer: {
-    marginBottom: Dimensions.get('window').height * 0.0197,
+    marginBottom: height * 0.0197,
   },
   inputLabel: {
     fontSize: 14,
     color: '#888',
     marginBottom: 6,
-    fontFamily: 'Pretendard-Regular',
   },
   input: {
     borderBottomWidth: 1,
@@ -163,13 +157,12 @@ const styles = StyleSheet.create({
     paddingVertical: 8,
     fontSize: 16,
     color: '#333',
-    fontFamily: 'Pretendard-Regular',
   },
   rememberRow: {
     flexDirection: 'row',
     justifyContent: 'space-between',
     alignItems: 'center',
-    marginBottom: Dimensions.get('window').height * 0.0345,
+    marginBottom: height * 0.0345,
   },
   checkboxContainer: {
     flexDirection: 'row',
@@ -180,7 +173,7 @@ const styles = StyleSheet.create({
     height: 18,
     borderRadius: 4, // ← 살짝 둥글게
     borderWidth: 1.5,
-    borderColor: '#d97706',
+    borderColor: '#b9b6b4',
     alignItems: 'center',
     justifyContent: 'center',
     marginRight: 8,
@@ -210,10 +203,10 @@ const styles = StyleSheet.create({
   },
   loginButton: {
     backgroundColor: '#FFF',
-    paddingVertical: Dimensions.get('window').height * 0.025,
+    paddingVertical: height * 0.025,
     borderRadius: 999,
     alignItems: 'center',
-    marginBottom: Dimensions.get('window').height * 0.0197,
+    marginBottom: height * 0.0197,
   },
   loginText: {
     color: '#2E2E2E',
