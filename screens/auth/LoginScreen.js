@@ -3,11 +3,13 @@ import {
   View, Text, TextInput, TouchableOpacity, StyleSheet, Image,
   Alert, Dimensions
 } from 'react-native';
-import auth from '@react-native-firebase/auth';
+import { getAuth, signInWithEmailAndPassword } from 'firebase/auth';
+import { firebaseApp } from '../../firebaseConfig';
 import AsyncStorage from '@react-native-async-storage/async-storage';
 import api from '../../api/axios';
 import useAuthStore from '../../store/useAuthStore';
 
+const auth = getAuth(firebaseApp);
 const { width, height } = Dimensions.get('window');
 
 const LoginScreen = () => {
@@ -18,7 +20,7 @@ const LoginScreen = () => {
 
   const handleLogin = async () => {
     try {
-      const userCredential = await auth().signInWithEmailAndPassword(email, password);
+      const userCredential = await signInWithEmailAndPassword(auth, email, password);
       const idToken = await userCredential.user.getIdToken();
       await AsyncStorage.setItem('userToken', idToken);
       await api.post('/auth/login', { idToken });
@@ -85,7 +87,7 @@ const LoginScreen = () => {
 
       <View style={styles.signupRow}>
         <Text>Don’t have an account? </Text>
-        <TouchableOpacity>
+        <TouchableOpacity onPress={() => navigation.navigate('SignUp')}>
           <Text style={styles.signup}>Sign Up</Text>
         </TouchableOpacity>
       </View>

@@ -1,11 +1,14 @@
+import './firebaseConfig'; 
 import React, {useEffect} from 'react';
 import { Text, TextInput } from 'react-native';
 import { NavigationContainer } from '@react-navigation/native';
 // import Root from './navigation/Root';
+import AuthStack from './navigation/AuthStack';
 // import SignUpScreen from './screens/auth/SignUpScreen';
 // import SplashScreen from './screens/auth/SplashScreen';
-import LoginScreen from './screens/auth/LoginScreen';
+// import LoginScreen from './screens/auth/LoginScreen';
 // import MainScreen from './screens/main/MainScreen';
+
 
 function App(): React.JSX.Element {
   useEffect(() => {
@@ -23,7 +26,7 @@ function App(): React.JSX.Element {
   }, []);
   return (
     <NavigationContainer>
-      <LoginScreen />
+      <AuthStack />
     </NavigationContainer>
   );
 }

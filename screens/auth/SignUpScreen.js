@@ -1,17 +1,18 @@
+import { getAuth, createUserWithEmailAndPassword, updateProfile } from 'firebase/auth';
+import { firebaseApp } from '../../firebaseConfig'; // 루트 기준
 import React, { useState } from 'react';
 import {
   View,Text,TextInput,Alert,TouchableOpacity,Pressable,StyleSheet,Image, Dimensions,ScrollView,KeyboardAvoidingView,Platform
 } from 'react-native';
-import auth from '@react-native-firebase/auth';
 import AsyncStorage from '@react-native-async-storage/async-storage';
 import api from '../../api/axios';
 import { useNavigation } from '@react-navigation/native';
 import LoginScreen from './LoginScreen';
 
 const { width, height } = Dimensions.get('window');
+const auth = getAuth(firebaseApp);
 
 const SignUpScreen = () => {
-  console.log('[SignUpScreen] mounted');
   const navigation = useNavigation();
 
   const [fullName, setFullName] = useState('');
@@ -26,8 +27,8 @@ const SignUpScreen = () => {
     }
 
     try {
-      const userCredential = await auth().createUserWithEmailAndPassword(email, password);
-      await userCredential.user.updateProfile({ displayName: fullName });
+      const userCredential = await createUserWithEmailAndPassword(auth, email, password);
+      await updateProfile(userCredential.user, { displayName: fullName });
       const idToken = await userCredential.user.getIdToken();
       await AsyncStorage.setItem('userToken', idToken);
       await api.post('/auth/signup', { idToken });
@@ -44,7 +45,7 @@ const SignUpScreen = () => {
       behavior={Platform.OS === 'ios' ? 'padding' : undefined}
     >
     <ScrollView contentContainerStyle={styles.container}>
-    <View style={styles.container}>
+    <View>
       <Text style={styles.header}>Create an Account</Text>
       <Text style={styles.subheader}>Sign up now to get started with an account.</Text>
 
@@ -105,7 +106,7 @@ const SignUpScreen = () => {
       {/* Login Link */}
       <View style={styles.loginRow}>
         <Text>Already have an account? </Text>
-        <TouchableOpacity onPress={() => navigation.navigate('LoginScreen')}>
+        <TouchableOpacity onPress={() => navigation.navigate('Login')}>
           <Text style={styles.login}>Log In</Text>
         </TouchableOpacity>
       </View>
