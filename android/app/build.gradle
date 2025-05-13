@@ -1,3 +1,4 @@
+apply plugin: "kotlin-android" 
 apply plugin: "com.android.application"
 apply plugin: "com.facebook.react"
 
@@ -101,7 +102,25 @@ android {
             proguardFiles getDefaultProguardFile("proguard-android.txt"), "proguard-rules.pro"
         }
     }
+    buildFeatures {
+        buildConfig = true
+    }
+    compileOptions {
+        sourceCompatibility JavaVersion.VERSION_17
+        targetCompatibility JavaVersion.VERSION_17
+        coreLibraryDesugaringEnabled true
+    }
 }
+
+
+afterEvaluate {
+  tasks.withType(org.jetbrains.kotlin.gradle.tasks.KotlinCompile).configureEach {
+    kotlinOptions {
+      jvmTarget = "17"
+    }
+  }
+}
+
 
 dependencies {
     // The version of react-native is set by the React Native Gradle Plugin
@@ -118,6 +137,17 @@ dependencies {
     } else {
         implementation jscFlavor
     }
+    coreLibraryDesugaring "com.android.tools:desugar_jdk_libs:2.0.4"
+
+    implementation platform("com.google.firebase:firebase-bom:32.7.3") // 이 버전이 firebase-auth 22.1.0 포함함
+    implementation "com.google.firebase:firebase-auth"
+}
+
+configurations.all {
+  resolutionStrategy {
+    force 'com.google.firebase:firebase-auth:22.1.0'
+    force 'com.google.android.recaptcha:recaptcha:18.0.1'
+  }
 }
 
 apply from: file("../../node_modules/@react-native-community/cli-platform-android/native_modules.gradle"); applyNativeModulesAppBuildGradle(project)
