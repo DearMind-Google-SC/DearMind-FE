@@ -76,7 +76,7 @@ android {
 
     namespace "com.dearmind"
     defaultConfig {
-        applicationId "com.dearmind"
+        applicationId "com.dearmind.app"
         minSdkVersion rootProject.ext.minSdkVersion
         targetSdkVersion rootProject.ext.targetSdkVersion
         versionCode 1
@@ -141,13 +141,19 @@ dependencies {
 
     implementation platform("com.google.firebase:firebase-bom:32.7.3") // 이 버전이 firebase-auth 22.1.0 포함함
     implementation "com.google.firebase:firebase-auth"
+    //implementation "com.google.firebase:firebase-analytics"    
 }
 
 configurations.all {
   resolutionStrategy {
     force 'com.google.firebase:firebase-auth:22.1.0'
     force 'com.google.android.recaptcha:recaptcha:18.0.1'
+    force "org.jetbrains.kotlin:kotlin-stdlib:1.8.22"
+    force "org.jetbrains.kotlin:kotlin-stdlib-jdk7:1.8.22"
+    force "org.jetbrains.kotlin:kotlin-stdlib-jdk8:1.8.22"
   }
 }
 
 apply from: file("../../node_modules/@react-native-community/cli-platform-android/native_modules.gradle"); applyNativeModulesAppBuildGradle(project)
+apply from: "../../node_modules/react-native-vector-icons/fonts.gradle"
+apply plugin: 'com.google.gms.google-services'
