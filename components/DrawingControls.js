@@ -14,6 +14,7 @@ const DrawingControls = ({ paths, setPaths, onSave }) => {
     setPaths(newPaths);
     setRedoStack((prev) => [...prev, last]);
   };
+  
 
   const handleRedo = () => {
     if (redoStack.length === 0) return;

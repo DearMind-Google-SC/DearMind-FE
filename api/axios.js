@@ -1,19 +1,15 @@
 import axios from 'axios';
-import AsyncStorage from '@react-native-async-storage/async-storage';
+import { getAuth } from 'firebase/auth';
 
-const api = axios.create({
-  baseURL: 'https://dearmind-be.onrender.com',
-  timeout: 5000,
-});
+const api = axios.create({ baseURL: 'https://dearmind-be.onrender.com' });
 
 api.interceptors.request.use(async (config) => {
-  const token = await AsyncStorage.getItem('userToken');
-  if (token) {
+  const user = getAuth().currentUser;
+  if (user) {
+    const token = await user.getIdToken();
     config.headers.Authorization = `Bearer ${token}`;
   }
   return config;
-}, (error) => {
-  return Promise.reject(error);
 });
 
 export default api;

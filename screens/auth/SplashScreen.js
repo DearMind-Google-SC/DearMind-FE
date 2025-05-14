@@ -1,28 +1,31 @@
 import React from 'react';
-import { View, Text, TouchableOpacity, StyleSheet } from 'react-native';
-import { useNavigation } from '@react-navigation/native';
+import { View, Text, TouchableOpacity, StyleSheet, Dimensions } from 'react-native';
 
-const SplashScreen = () => {
-  const navigation = useNavigation();
+const { height } = Dimensions.get('window');
 
+const SplashScreen = ({ navigate }) => {
   return (
     <View style={styles.container}>
-      <Text style={styles.titleTop}>Dear</Text>
-      <Text style={styles.titleBottom}>Mind</Text>
+      <View style={styles.titleContainer}>
+        <Text style={styles.titleTop}>Dear</Text>
+        <Text style={styles.titleBottom}>Mind</Text>
+      </View>
 
-      <TouchableOpacity
-        style={styles.buttonDark}
-        onPress={() => navigation.navigate('SignUp')}
-      >
-        <Text style={styles.buttonTextLight}>Sign Up</Text>
-      </TouchableOpacity>
+      <View style={styles.buttonContainer}>
+        <TouchableOpacity
+          style={styles.buttonDark}
+          onPress={() => navigate('SignUp')}
+        >
+          <Text style={styles.buttonTextLight}>Sign Up</Text>
+        </TouchableOpacity>
 
-      <TouchableOpacity
-        style={styles.buttonLight}
-        onPress={() => navigation.navigate('Login')}
-      >
-        <Text style={styles.buttonTextDark}>Log In</Text>
-      </TouchableOpacity>
+        <TouchableOpacity
+          style={styles.buttonLight}
+          onPress={() => navigate('Login')}
+        >
+          <Text style={styles.buttonTextDark}>Log In</Text>
+        </TouchableOpacity>
+      </View>
     </View>
   );
 };
@@ -31,35 +34,39 @@ const styles = StyleSheet.create({
   container: {
     flex: 1,
     backgroundColor: '#F6F1EE',
-    justifyContent: 'center',
+    justifyContent: 'space-between',
     alignItems: 'center',
-    paddingHorizontal: 24,
+    paddingVertical: height * 0.12,
+  },
+  titleContainer: {
+    alignItems: 'center',
   },
   titleTop: {
     fontSize: 32,
     fontWeight: '700',
     color: '#111',
-    marginBottom: -10,
+    marginBottom: -8,
   },
   titleBottom: {
     fontSize: 64,
     fontWeight: '900',
     color: '#111',
-    marginBottom: 60,
+  },
+  buttonContainer: {
+    width: '100%',
+    alignItems: 'center',
   },
   buttonDark: {
     backgroundColor: '#111',
     paddingVertical: 16,
-    paddingHorizontal: 60,
     borderRadius: 32,
-    marginBottom: 16,
     width: '80%',
     alignItems: 'center',
+    marginBottom: 12,
   },
   buttonLight: {
     backgroundColor: '#fff',
     paddingVertical: 16,
-    paddingHorizontal: 60,
     borderRadius: 32,
     width: '80%',
     alignItems: 'center',

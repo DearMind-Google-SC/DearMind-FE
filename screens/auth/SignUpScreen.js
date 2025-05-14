@@ -1,20 +1,20 @@
 import { getAuth, createUserWithEmailAndPassword, updateProfile } from 'firebase/auth';
-import { firebaseApp } from '../../firebaseConfig'; // 루트 기준
+import { firebaseApp } from '../../firebaseConfig';
 import React, { useState } from 'react';
 import {
-  View,Text,TextInput,Alert,TouchableOpacity,Pressable,StyleSheet,Image, Dimensions,ScrollView,KeyboardAvoidingView,Platform
+  View, Text, TextInput, Alert, TouchableOpacity, StyleSheet, Image,
+  Dimensions, ScrollView, KeyboardAvoidingView, Platform
 } from 'react-native';
 import AsyncStorage from '@react-native-async-storage/async-storage';
 import api from '../../api/axios';
-import { useNavigation } from '@react-navigation/native';
-import LoginScreen from './LoginScreen';
 
 const { width, height } = Dimensions.get('window');
 const auth = getAuth(firebaseApp);
 
-const SignUpScreen = () => {
-  const navigation = useNavigation();
-
+/**
+ * @param {{ navigate: (screen: 'Login' | 'Splash') => void }} props
+ */
+const SignUpScreen = ({ navigate }) => {
   const [fullName, setFullName] = useState('');
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
@@ -44,73 +44,68 @@ const SignUpScreen = () => {
       style={{ flex: 1 }}
       behavior={Platform.OS === 'ios' ? 'padding' : undefined}
     >
-    <ScrollView contentContainerStyle={styles.container}>
-    <View>
-      <Text style={styles.header}>Create an Account</Text>
-      <Text style={styles.subheader}>Sign up now to get started with an account.</Text>
+      <ScrollView contentContainerStyle={styles.container}>
+        <View>
+          <Text style={styles.header}>Create an Account</Text>
+          <Text style={styles.subheader}>Sign up now to get started with an account.</Text>
 
-      {/* 구글 버튼 (로직은 미구현) */}
-      <TouchableOpacity style={styles.googleButton}>
-        <Image source={require('../../assets/images/google-logo.png')} 
-        style={styles.googleLogo} />
-      </TouchableOpacity>
+          <TouchableOpacity style={styles.googleButton}>
+            <Image source={require('../../assets/images/google-logo.png')} style={styles.googleLogo} />
+          </TouchableOpacity>
 
-      <View style={styles.orContainer}>
-        <View style={styles.line} />
-        <Text style={styles.orText}>OR</Text>
-        <View style={styles.line} />
-      </View>
+          <View style={styles.orContainer}>
+            <View style={styles.line} />
+            <Text style={styles.orText}>OR</Text>
+            <View style={styles.line} />
+          </View>
 
-      <View style={styles.inputContainer}>
-        <Text style={styles.inputLabel}>Full Name</Text>
-        <TextInput
-          value={fullName}
-          onChangeText={setFullName}
-          style={styles.input}
-        />
-      </View>
-      <View style={styles.inputContainer}>
-        <Text style={styles.inputLabel}>Email Address</Text>
-        <TextInput
-          value={email}
-          onChangeText={setEmail}
-          autoCapitalize="none"
-          keyboardType="email-address"
-          style={styles.input}
-        />
-      </View>
-      <View style={styles.inputContainer}>
-        <Text style={styles.inputLabel}>Password</Text>
-        <TextInput
-          value={password}
-          onChangeText={setPassword}
-          secureTextEntry
-          style={styles.input}
-        />
-      </View>
+          <View style={styles.inputContainer}>
+            <Text style={styles.inputLabel}>Full Name</Text>
+            <TextInput value={fullName} onChangeText={setFullName} style={styles.input} />
+          </View>
+          <View style={styles.inputContainer}>
+            <Text style={styles.inputLabel}>Email Address</Text>
+            <TextInput
+              value={email}
+              onChangeText={setEmail}
+              autoCapitalize="none"
+              keyboardType="email-address"
+              style={styles.input}
+            />
+          </View>
+          <View style={styles.inputContainer}>
+            <Text style={styles.inputLabel}>Password</Text>
+            <TextInput
+              value={password}
+              onChangeText={setPassword}
+              secureTextEntry
+              style={styles.input}
+            />
+          </View>
 
-      <View style={styles.checkboxRow}>
-          <TouchableOpacity onPress={() => setAgreeTerms(!agreeTerms)} style={styles.checkboxContainer}>
-            <View style={[styles.checkbox, agreeTerms && styles.checkboxChecked]}>
-              {agreeTerms && <Text style={styles.checkmark}>✓</Text>}
-            </View>
-            <Text style={styles.rememberText}>I agree to the <Text style={styles.link}>Terms of Service</Text></Text>
+          <View style={styles.checkboxRow}>
+            <TouchableOpacity onPress={() => setAgreeTerms(!agreeTerms)} style={styles.checkboxContainer}>
+              <View style={[styles.checkbox, agreeTerms && styles.checkboxChecked]}>
+                {agreeTerms && <Text style={styles.checkmark}>✓</Text>}
+              </View>
+              <Text style={styles.rememberText}>
+                I agree to the <Text style={styles.link}>Terms of Service</Text>
+              </Text>
+            </TouchableOpacity>
+          </View>
+        </View>
+
+        <TouchableOpacity style={styles.signupButton} onPress={handleSignup}>
+          <Text style={styles.signupText}>Sign Up</Text>
+        </TouchableOpacity>
+
+        <View style={styles.loginRow}>
+          <Text>Already have an account? </Text>
+          <TouchableOpacity onPress={() => navigate('Login')}>
+            <Text style={styles.login}>Log In</Text>
           </TouchableOpacity>
         </View>
-      </View>
-      {/* Sign Up Button */}
-      <TouchableOpacity style={styles.signupButton} onPress={handleSignup}>
-        <Text style={styles.signupText}>Sign Up</Text>
-      </TouchableOpacity>
-
-      {/* Login Link */}
-      <View style={styles.loginRow}>
-        <Text>Already have an account? </Text>
-        <TouchableOpacity onPress={() => navigation.navigate('Login')}>
-          <Text style={styles.login}>Log In</Text>
-        </TouchableOpacity>
-      </View>
-    </ScrollView>
+      </ScrollView>
     </KeyboardAvoidingView>
   );
 };

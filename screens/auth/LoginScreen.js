@@ -12,7 +12,10 @@ import useAuthStore from '../../store/useAuthStore';
 const auth = getAuth(firebaseApp);
 const { width, height } = Dimensions.get('window');
 
-const LoginScreen = () => {
+/**
+ * @param {{ navigate: (screen: 'SignUp' | 'Splash') => void }} props
+ */
+const LoginScreen = ({ navigate }) => {
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
   const [remember, setRemember] = useState(false);
@@ -25,10 +28,9 @@ const LoginScreen = () => {
       await AsyncStorage.setItem('userToken', idToken);
       await api.post('/auth/login', { idToken });
       login();
-      Alert.alert('로그인 성공', '서버로 idToken 전송 완료!');
     } catch (error) {
       console.error(error);
-      Alert.alert('에러', error.message);
+      Alert.alert('Login failed', error.message);
     }
   };
 
@@ -81,21 +83,20 @@ const LoginScreen = () => {
           <Text style={styles.forgot}>Forgot Password?</Text>
         </TouchableOpacity>
       </View>
+
       <TouchableOpacity style={styles.loginButton} onPress={handleLogin}>
         <Text style={styles.loginText}>Log In</Text>
       </TouchableOpacity>
 
       <View style={styles.signupRow}>
         <Text>Don’t have an account? </Text>
-        <TouchableOpacity onPress={() => navigation.navigate('SignUp')}>
+        <TouchableOpacity onPress={() => navigate('SignUp')}>
           <Text style={styles.signup}>Sign Up</Text>
         </TouchableOpacity>
       </View>
     </View>  
   );
 };
-
-export default LoginScreen;
 
 const styles = StyleSheet.create({
   container: {
@@ -225,3 +226,6 @@ const styles = StyleSheet.create({
     fontWeight: '600',
   },
 });
+
+
+export default LoginScreen;

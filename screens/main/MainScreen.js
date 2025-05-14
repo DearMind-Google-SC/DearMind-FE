@@ -1,40 +1,44 @@
 import React, { useEffect, useState } from 'react';
 import Icon from 'react-native-vector-icons/Feather';
 import {
-  View,
-  Text,
-  StyleSheet,
-  TouchableOpacity,
-  Image,
-  ScrollView,
+  View, Text, StyleSheet, TouchableOpacity,
+  Image, ScrollView, Dimensions
 } from 'react-native';
-import { useNavigation } from '@react-navigation/native';
 import api from '../../api/axios';
-
-const MainScreen = () => {
-  const navigation = useNavigation();
+const { width,height } = Dimensions.get('window');
+/**
+ * @param {{ navigate: (screen: string) => void }} props
+ */
+const MainScreen = ({ navigate }) => {
   const [boosters, setBoosters] = useState([]);
   const [userName, setUserName] = useState('');
-  const [characterUri, setCharacterUri] = useState<string | null>(null);
+  const [characterUri, setCharacterUri] = useState(null);
 
   useEffect(() => {
     const fetchData = async () => {
       try {
-        const [boosterRes, userRes, emotionRes] = await Promise.all([
-          api.get('/selfcare/latest'),
+        api.get('/selfcare/latest')
+          .then((res) => {
+            if (res.data?.length) setBoosters(res.data);
+          })
+          .catch((err) => {
+            console.warn('Mood Booster not found (optional):', err?.response?.status);
+          });
+
+        // 필수 API들
+        const [userRes, emotionRes] = await Promise.all([
           api.get('/auth/me'),
           api.get('/emotion-icon/today'),
         ]);
 
-        if (boosterRes.data?.length) setBoosters(boosterRes.data);
         if (userRes.data?.name) setUserName(userRes.data.name);
         if (emotionRes.status === 200 && emotionRes.data?.imageUrl) {
           setCharacterUri(emotionRes.data.imageUrl);
         }
       } catch (err) {
-        console.error('MainScreen fetch error:', err);
+        console.error('MainScreen essential fetch error:', err);
         setUserName('Jun'); // fallback
-        setCharacterUri(null); // fallback to local image
+        setCharacterUri(null);
       }
     };
 
@@ -43,18 +47,15 @@ const MainScreen = () => {
 
   return (
     <ScrollView contentContainerStyle={styles.container}>
-      {/* 알림 아이콘 */}
       <View style={styles.topRightIcon}>
         <Icon name="bell" size={22} color="#EB6A39" />
       </View>
 
-      {/* 텍스트 */}
       <Text style={styles.title}>Hello, {userName}.</Text>
       <Text style={styles.subtitle}>
-        How do you feel{'\n'}about your <Text style={styles.bold}>current emotions?</Text>
+        How do you feel{'\n'}about your <Text style={styles.bold}>current{'\n'}emotions?</Text>
       </Text>
 
-      {/* 캐릭터 이미지 */}
       <Image
         source={
           characterUri
@@ -64,36 +65,34 @@ const MainScreen = () => {
         style={styles.character}
       />
 
-      {/* 버튼들 */}
       <View style={styles.buttonGrid}>
         <TouchableOpacity
           style={[styles.gridButton, styles.orange, styles.bigButton]}
-          onPress={() => navigation.navigate('DrawingScreen')}
+          onPress={() => navigate('DiaryFromMain')}
         >
-          <Text style={styles.buttonText}>Draw with Mind</Text>
-          <Icon name="arrow-up-right" size={18} color="#fff" style={styles.arrowIcon} />
+          <Text style={styles.buttonTextMain}>Draw{'\n'}with Mind</Text>
+          <Icon name="arrow-up-right" size={18} color="#F4F0ED" style={styles.arrowIcon} />
         </TouchableOpacity>
 
         <View style={styles.rightButtons}>
           <TouchableOpacity
             style={styles.gridButton}
-            onPress={() => navigation.navigate('ChatScreen')}
+            onPress={() => navigate('Chat')}
           >
             <Text style={styles.buttonText}>Chat with Mind</Text>
-            <Icon name="arrow-up-right" size={18} color="#fff" style={styles.arrowIcon} />
+            <Icon name="arrow-up-right" size={18} color="#F4F0ED" style={styles.arrowIcon} />
           </TouchableOpacity>
 
           <TouchableOpacity
             style={styles.gridButton}
-            onPress={() => navigation.navigate('ArchiveHomeScreen')}
+            onPress={() => navigate('Archive')}
           >
             <Text style={styles.buttonText}>Mood Archive</Text>
-            <Icon name="arrow-up-right" size={18} color="#fff" style={styles.arrowIcon} />
+            <Icon name="arrow-up-right" size={18} color="#F4F0ED" style={styles.arrowIcon} />
           </TouchableOpacity>
         </View>
       </View>
 
-      {/* 부스터 (선택 사항) */}
       {boosters.length > 0 && (
         <View style={styles.boosterWrapper}>
           <Text style={styles.boosterTitle}>Mood Boosters</Text>
@@ -109,11 +108,13 @@ const MainScreen = () => {
   );
 };
 
+
 const styles = StyleSheet.create({
   container: {
+    flexGrow: 1,
+    backgroundColor: '#F4F0ED',
     padding: 24,
-    backgroundColor: '#F9F6F3',
-    paddingBottom: 80,
+    paddingBottom: 100, 
   },
   topRightIcon: {
     position: 'absolute',
@@ -121,89 +122,114 @@ const styles = StyleSheet.create({
     right: 16,
     zIndex: 10,
   },
-  icon: {
-    width: 24,
-    height: 24,
-  },
   title: {
-    fontSize: 22,
-    fontWeight: '600',
-    marginTop: 48,
-    marginBottom: 4,
+    fontSize: 44,
+    lineHeight: 50,
+    fontWeight: '500',
+    color: '#2E2E2E',
+    marginTop: 64,
+    textAlign: 'left',
+    maxWidth: 400,
+    paddingLeft: 10,
+    letterSpacing: 0.5,
   },
   subtitle: {
-    fontSize: 16,
-    color: '#555',
-    marginBottom: 20,
-    lineHeight: 22,
+    fontSize: 44,
+    lineHeight: 46,
+    fontWeight: '500',
+    color: '#2E2E2E',
+    marginBottom: 32,
+    textAlign: 'left',
+    maxWidth: 420,
+    paddingLeft: 10,
+    letterSpacing: 0.5,
+    paddingBottom: 10,
   },
   bold: {
     fontWeight: '700',
   },
   character: {
-    width: 120,
-    height: 120,
+    width: 200,
+    height: 200,
     alignSelf: 'center',
-    marginBottom: 24,
+    marginBottom: 60,
+    resizeMode: 'contain',
   },
   buttonGrid: {
     flexDirection: 'row',
-    gap: 12,
+    gap: 16,
+    marginBottom: 40,
   },
   bigButton: {
     flex: 1,
-    height: 212,
+    height: 300,
     justifyContent: 'center',
+    backgroundColor: '#FF5900',
+    borderRadius: 16,
+    padding: 20,
+    position: 'relative',
+    justifyContent: 'flex-end',
+    alignItems: 'flex-start',
   },
   rightButtons: {
     flex: 1,
     justifyContent: 'space-between',
-    gap: 12,
+    gap: 16,
   },
   gridButton: {
     flex: 1,
-    height: 100,
+    height: 116,
     backgroundColor: '#333',
     borderRadius: 12,
-    justifyContent: 'center',
-    alignItems: 'center',
-    paddingHorizontal: 10,
-  },
-  orange: {
-    backgroundColor: '#EB6A39',
+    justifyContent: 'flex-end',
+    alignItems: 'flex-start',
+    paddingVertical: 20,
+    paddingHorizontal: 12,
+    position: 'relative',
   },
   buttonText: {
     color: '#fff',
-    fontWeight: '600',
-    fontSize: 15,
-    textAlign: 'center',
+    fontWeight: '500',
+    fontSize: 17,
+    textAlign: 'left',
+    lineHeight: 22,
+  },
+  buttonTextMain: {
+    color: '#fff',
+    fontWeight: '500',
+    fontSize: 30,
+    textAlign: 'left',
+    lineHeight: 30,
   },
   arrowIcon: {
     position: 'absolute',
-    top: 10,
-    right: 10,
+    top: 14,
+    right: 14,
   },
   boosterWrapper: {
-    marginTop: 30,
+    marginTop: 40,
   },
   boosterTitle: {
     fontSize: 16,
     fontWeight: '600',
-    marginBottom: 10,
-    color: '#333',
+    marginBottom: 12,
+    color: '#222',
   },
   boosterCard: {
     backgroundColor: '#fff',
     padding: 16,
     borderRadius: 12,
     marginBottom: 12,
+    borderWidth: 1,
+    borderColor: '#eee',
     shadowColor: '#000',
-    shadowOpacity: 0.05,
+    shadowOpacity: 0.04,
     shadowRadius: 6,
+    elevation: 2,
   },
   boosterName: {
-    fontWeight: '600',
-    fontSize: 15,
+    fontWeight: '700',
+    fontSize: 14,
     color: '#EB6A39',
   },
   boosterDesc: {
@@ -212,5 +238,6 @@ const styles = StyleSheet.create({
     marginTop: 4,
   },
 });
+
 
 export default MainScreen;

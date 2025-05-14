@@ -1,24 +1,33 @@
-import React from 'react';
-import { createNativeStackNavigator } from '@react-navigation/native-stack';
+import React, { useState } from 'react';
+import { View } from 'react-native';
 import SplashScreen from '../screens/auth/SplashScreen';
 import SignUpScreen from '../screens/auth/SignUpScreen';
 import LoginScreen from '../screens/auth/LoginScreen';
 
-const Stack = createNativeStackNavigator();
+/** @type {[ScreenName, (screen: ScreenName) => void]} */
+
 
 const AuthStack = () => {
-  console.log('[AuthStack] mounted');
+  const [currentScreen, setCurrentScreen] = useState('Splash');
 
-  return (
-    <Stack.Navigator
-      initialRouteName="Splash"
-      screenOptions={{ headerShown: false }}
-    >
-      <Stack.Screen name="Splash" component={SplashScreen} />
-      <Stack.Screen name="SignUp" component={SignUpScreen} />
-      <Stack.Screen name="Login" component={LoginScreen} />
-    </Stack.Navigator>
-  );
+  const navigate = (screen) => {
+    setCurrentScreen(screen);
+  };
+
+  const renderScreen = () => {
+    switch (currentScreen) {
+      case 'Splash':
+        return <SplashScreen navigate={navigate} />;
+      case 'SignUp':
+        return <SignUpScreen navigate={navigate} />;
+      case 'Login':
+        return <LoginScreen navigate={navigate} />;
+      default:
+        return null;
+    }
+  };
+
+  return <View style={{ flex: 1 }}>{renderScreen()}</View>;
 };
 
 export default AuthStack;
