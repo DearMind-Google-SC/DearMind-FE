@@ -1,8 +1,6 @@
-// components/DrawingControls.js
-
 import React, { useState } from 'react';
 import { View, StyleSheet, TouchableOpacity, Text } from 'react-native';
-import MaterialIcons from 'react-native-vector-icons/MaterialIcons';
+import Icon from 'react-native-vector-icons/MaterialIcons';
 
 const DrawingControls = ({ paths, setPaths, onSave }) => {
   const [redoStack, setRedoStack] = useState([]);
@@ -10,11 +8,10 @@ const DrawingControls = ({ paths, setPaths, onSave }) => {
   const handleUndo = () => {
     if (paths.length === 0) return;
     const newPaths = [...paths];
-    const last = newPaths.pop();
+    const popped = newPaths.pop();
     setPaths(newPaths);
-    setRedoStack((prev) => [...prev, last]);
+    setRedoStack((prev) => [...prev, popped]);
   };
-  
 
   const handleRedo = () => {
     if (redoStack.length === 0) return;
@@ -26,14 +23,14 @@ const DrawingControls = ({ paths, setPaths, onSave }) => {
 
   return (
     <View style={styles.container}>
-      <TouchableOpacity onPress={handleUndo} style={styles.button}>
-        <MaterialIcons name="undo" size={24} color="#555" />
+      <TouchableOpacity onPress={handleUndo} style={styles.iconButton}>
+        <Icon name="undo" size={24} color="#333" />
       </TouchableOpacity>
-      <TouchableOpacity onPress={handleRedo} style={styles.button}>
-        <MaterialIcons name="redo" size={24} color="#555" />
+      <TouchableOpacity onPress={handleRedo} style={styles.iconButton}>
+        <Icon name="redo" size={24} color="#333" />
       </TouchableOpacity>
       <TouchableOpacity onPress={onSave} style={styles.saveButton}>
-        <Text style={styles.saveText}>저장</Text>
+        <Text style={styles.saveText}>Save a mood diary</Text>
       </TouchableOpacity>
     </View>
   );
@@ -41,22 +38,28 @@ const DrawingControls = ({ paths, setPaths, onSave }) => {
 
 const styles = StyleSheet.create({
   container: {
+    marginTop: 16,
     flexDirection: 'row',
     justifyContent: 'space-between',
     alignItems: 'center',
-    marginTop: 10,
   },
-  button: {
+  iconButton: {
     padding: 10,
+    borderRadius: 6,
+    backgroundColor: '#eee',
+    marginRight: 10,
   },
   saveButton: {
-    paddingVertical: 10,
-    paddingHorizontal: 20,
-    backgroundColor: '#007AFF',
-    borderRadius: 8,
+    flex: 1,
+    paddingVertical: 12,
+    backgroundColor: '#111',
+    borderRadius: 30,
+    justifyContent: 'center',
+    alignItems: 'center',
   },
   saveText: {
     color: '#fff',
+    fontSize: 15,
     fontWeight: '600',
   },
 });

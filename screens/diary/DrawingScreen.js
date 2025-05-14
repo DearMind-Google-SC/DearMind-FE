@@ -1,54 +1,55 @@
-import React, { useState, useRef } from 'react';
+// screens/diary/DrawingScreen.js
+
+import React, { useRef, useState } from 'react';
 import {
   View,
   Text,
   TextInput,
   StyleSheet,
-  Dimensions,
   ScrollView,
+  Dimensions,
 } from 'react-native';
-import { useNavigation } from '@react-navigation/native';
-import { ImageFormat } from '@shopify/react-native-skia';
-import api from '../../api/axios';
+import ViewShot from 'react-native-view-shot';
 import DrawingCanvas from '../../components/DrawingCanvas';
 import ColorToolbox from '../../components/ColorToolbox';
 import DrawingControls from '../../components/DrawingControls';
+import api from '../../api/axios';
 
-const { width, height } = Dimensions.get('window');
+const { height } = Dimensions.get('window');
 
-const DrawingScreen = () => {
-  const navigation = useNavigation();
-  const canvasRef = useRef(); // Skia 캔버스를 참조하기 위함
-
+const DrawingScreen = ({ goTo }) => {
+  const viewShotRef = useRef(null);
   const [paths, setPaths] = useState([]);
   const [color, setColor] = useState('#000000');
   const [strokeWidth, setStrokeWidth] = useState(4);
   const [inputText, setInputText] = useState('');
 
   const handleSave = async () => {
-    if (!canvasRef.current) return;
-    const image = canvasRef.current.capture();
-    if (!image) return;
-
-    const base64 = image.encodeToBase64(ImageFormat.PNG);
-    const imageData = `data:image/png;base64,${base64}`;
+    if (!viewShotRef.current) return;
 
     try {
-        const response = await api.post('/diary', {
+      const uri = await viewShotRef.current.capture();
+      const base64 = await fetch(uri).then(res => res.blob())
+        .then(blob => new Promise((resolve) => {
+          const reader = new FileReader();
+          reader.onloadend = () => resolve(reader.result.split(',')[1]);
+          reader.readAsDataURL(blob);
+        }));
+
+      const imageData = `data:image/png;base64,${base64}`;
+
+      const res = await api.post('/diary', {
         image: imageData,
         text: inputText,
-        });
+      });
 
-        if (response.status === 201) {
-        navigation.navigate('LoadingScreen', {
-            imageData,
-            text: inputText,
-        });
-        } else {
-        console.warn('Diary 저장 실패:', response.status);
-        }
+      if (res.status === 201) {
+        goTo('LoadingScreen', { imageData, text: inputText });
+      } else {
+        console.warn('일기 저장 실패:', res.status);
+      }
     } catch (err) {
-        console.error('Diary 저장 중 오류 발생:', err);
+      console.error('저장 중 오류:', err);
     }
   };
 
@@ -57,15 +58,18 @@ const DrawingScreen = () => {
       <Text style={styles.date}>April 26, 2025</Text>
       <Text style={styles.guide}>Draw how today’s weather makes you feel.</Text>
 
-      <View style={styles.canvasWrapper}>
+      <ViewShot
+        ref={viewShotRef}
+        options={{ format: 'png', quality: 1.0, result: 'tmpfile' }}
+        style={styles.canvasWrapper}
+      >
         <DrawingCanvas
-          ref={canvasRef}
-          color={color}
-          strokeWidth={strokeWidth}
           paths={paths}
           setPaths={setPaths}
+          color={color}
+          strokeWidth={strokeWidth}
         />
-      </View>
+      </ViewShot>
 
       <ColorToolbox
         color={color}
@@ -80,6 +84,7 @@ const DrawingScreen = () => {
         value={inputText}
         onChangeText={setInputText}
         multiline
+        placeholderTextColor="#999"
       />
 
       <DrawingControls
@@ -116,6 +121,7 @@ const styles = StyleSheet.create({
     borderColor: '#ddd',
     borderRadius: 12,
     overflow: 'hidden',
+    backgroundColor: '#fff',
     marginBottom: 12,
   },
   input: {
@@ -126,6 +132,7 @@ const styles = StyleSheet.create({
     minHeight: 80,
     textAlignVertical: 'top',
     marginBottom: 12,
+    color: '#000',
   },
 });
 

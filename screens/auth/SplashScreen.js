@@ -11,6 +11,8 @@ const SplashScreen = ({ navigate }) => {
         <Text style={styles.titleBottom}>Mind</Text>
       </View>
 
+      <View style={{ flex: 1 }} />
+
       <View style={styles.buttonContainer}>
         <TouchableOpacity
           style={styles.buttonDark}
@@ -21,7 +23,10 @@ const SplashScreen = ({ navigate }) => {
 
         <TouchableOpacity
           style={styles.buttonLight}
-          onPress={() => navigate('Login')}
+          onPress={() =>{
+            console.log('Login pressed');
+            navigate('Login')}
+          } 
         >
           <Text style={styles.buttonTextDark}>Log In</Text>
         </TouchableOpacity>
@@ -34,7 +39,6 @@ const styles = StyleSheet.create({
   container: {
     flex: 1,
     backgroundColor: '#F6F1EE',
-    justifyContent: 'space-between',
     alignItems: 'center',
     paddingVertical: height * 0.12,
   },

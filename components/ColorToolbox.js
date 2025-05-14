@@ -1,18 +1,15 @@
-// components/ColorToolbox.js
-
 import React from 'react';
 import { View, TouchableOpacity, StyleSheet } from 'react-native';
-import MaterialIcons from 'react-native-vector-icons/MaterialIcons';
+import Icon from 'react-native-vector-icons/MaterialCommunityIcons';
 
-
-const COLOR_OPTIONS = ['#000000', '#FF3B30', '#34C759', '#007AFF', '#FFD60A'];
+const COLOR_OPTIONS = ['#000000', '#F26B1F', '#FF3B30', '#34C759', '#6E5ADF'];
 const STROKE_WIDTHS = [2, 4, 6];
 
 const ColorToolbox = ({ color, setColor, strokeWidth, setStrokeWidth }) => {
   return (
     <View style={styles.container}>
       {/* 색상 선택 */}
-      <View style={styles.section}>
+      <View style={styles.colorSection}>
         {COLOR_OPTIONS.map((c) => (
           <TouchableOpacity
             key={c}
@@ -24,10 +21,17 @@ const ColorToolbox = ({ color, setColor, strokeWidth, setStrokeWidth }) => {
             onPress={() => setColor(c)}
           />
         ))}
+        {/* 지우개 */}
+        <TouchableOpacity
+          style={styles.eraser}
+          onPress={() => setColor('#FFFFFF')} // 배경색으로 덮기
+        >
+          <Icon name="eraser" size={20} color="#666" />
+        </TouchableOpacity>
       </View>
 
       {/* 펜 굵기 선택 */}
-      <View style={styles.section}>
+      <View style={styles.strokeSection}>
         {STROKE_WIDTHS.map((w) => (
           <TouchableOpacity
             key={w}
@@ -37,30 +41,29 @@ const ColorToolbox = ({ color, setColor, strokeWidth, setStrokeWidth }) => {
             ]}
             onPress={() => setStrokeWidth(w)}
           >
-            <View style={{ width: w, height: w, backgroundColor: '#000', borderRadius: w / 2 }} />
+            <View
+              style={{
+                width: w * 2,
+                height: w * 2,
+                borderRadius: w,
+                backgroundColor: '#333',
+              }}
+            />
           </TouchableOpacity>
         ))}
       </View>
-
-      {/* 지우개 버튼 (흰색 펜으로 대체) */}
-      <TouchableOpacity
-        style={styles.eraserButton}
-        onPress={() => setColor('#FFFFFF')}
-      >
-        <MaterialIcons name="remove-circle-outline" size={24} color="#888" />
-      </TouchableOpacity>
     </View>
   );
 };
 
 const styles = StyleSheet.create({
   container: {
+    marginTop: 8,
+    marginBottom: 16,
     flexDirection: 'row',
     justifyContent: 'space-between',
-    marginVertical: 12,
-    alignItems: 'center',
   },
-  section: {
+  colorSection: {
     flexDirection: 'row',
     alignItems: 'center',
   },
@@ -68,13 +71,23 @@ const styles = StyleSheet.create({
     width: 24,
     height: 24,
     borderRadius: 12,
-    marginHorizontal: 4,
+    marginRight: 8,
     borderWidth: 1,
     borderColor: '#ccc',
   },
   selectedColor: {
     borderColor: '#000',
     borderWidth: 2,
+  },
+  eraser: {
+    marginLeft: 4,
+    padding: 4,
+    backgroundColor: '#eee',
+    borderRadius: 12,
+  },
+  strokeSection: {
+    flexDirection: 'row',
+    alignItems: 'center',
   },
   strokeCircle: {
     width: 28,
@@ -89,10 +102,6 @@ const styles = StyleSheet.create({
   selectedStroke: {
     borderColor: '#000',
     borderWidth: 2,
-  },
-  eraserButton: {
-    padding: 6,
-    marginLeft: 10,
   },
 });
 

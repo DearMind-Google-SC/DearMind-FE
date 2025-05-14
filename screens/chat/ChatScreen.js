@@ -16,7 +16,7 @@ const ChatScreen = ({ goBack }) => {
   useEffect(() => {
     const loadInitialMessages = async () => {
       try {
-        const [initRes, historyRes] = await Promise.all([
+        const [initRes] = await Promise.all([
           api.get('/chat/init'),
         ]);
 
@@ -29,7 +29,7 @@ const ChatScreen = ({ goBack }) => {
           text: initRes.data?.message || 'How can I help you?',
         };
 
-        setMessages([initMessage, ...history]);
+        setMessages([initMessage]);
       } catch (err) {
         console.warn('초기 메시지 로드 실패:', err);
         setMessages([{ id: 'fallback', type: 'ai', text: 'How can I help you?' }]);

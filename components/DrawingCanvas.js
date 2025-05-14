@@ -1,81 +1,77 @@
-// components/DrawingCanvas.js
-
-import React, { forwardRef, useRef } from 'react';
-import {
-  Canvas,
-  Path,
-  Skia,
-  useTouchHandler,
-  useValue,
-  useCanvasRef,
-} from '@shopify/react-native-skia';
-import { StyleSheet, Dimensions } from 'react-native';
+import React, { useRef, useState, useImperativeHandle, forwardRef } from 'react';
+import { View, StyleSheet, PanResponder, Dimensions } from 'react-native';
+import Svg, { Path } from 'react-native-svg';
 
 const { width, height } = Dimensions.get('window');
 
 const DrawingCanvas = forwardRef(({ color, strokeWidth, paths, setPaths }, ref) => {
-  const canvasRef = useCanvasRef(); // Skia Canvas 객체 참조
-  const currentPath = useRef(null);
+  const [currentPoints, setCurrentPoints] = useState('');
 
-  React.useImperativeHandle(ref, () => ({
-  capture: () => {
-    if (canvasRef.current) {
-      return canvasRef.current.makeImageSnapshot();
-    }
-    return null;
-  },
-}));
+  const panResponder = useRef(
+    PanResponder.create({
+      onStartShouldSetPanResponder: () => true,
+      onPanResponderGrant: (evt) => {
+        const x = evt.nativeEvent.locationX;
+        const y = evt.nativeEvent.locationY;
+        setCurrentPoints(`M${x},${y}`);
+      },
+      onPanResponderMove: (evt) => {
+        const x = evt.nativeEvent.locationX;
+        const y = evt.nativeEvent.locationY;
+        setCurrentPoints((prev) => `${prev} L${x},${y}`);
+      },
+      onPanResponderRelease: () => {
+        if (currentPoints) {
+          setPaths((prev) => [...prev, { d: currentPoints, color, strokeWidth }]);
+          setCurrentPoints('');
+        }
+      },
+    })
+  ).current;
 
-  const touchHandler = useTouchHandler({
-    onStart: ({ x, y }) => {
-      const newPath = Skia.Path.Make();
-      newPath.moveTo(x, y);
-      currentPath.current = {
-        path: newPath,
-        color,
-        strokeWidth,
-      };
-    },
-    onActive: ({ x, y }) => {
-      if (currentPath.current && currentPath.current.path) {
-        currentPath.current.path.lineTo(x, y);
-      }
-    },
-    onEnd: () => {
-      if (currentPath.current) {
-        setPaths((prev) => [...prev, currentPath.current]);
-        currentPath.current = null;
-      }
-    },
-  });
+  useImperativeHandle(ref, () => ({
+    getSvgRef: () => svgRef.current,
+  }));
+
+  const svgRef = useRef();
 
   return (
-    <Canvas
-      ref={canvasRef}
-      style={styles.canvas}
-      onTouch={touchHandler}
-    >
-      {paths.map((p, i) => (
-        <Path
-          key={i}
-          path={p.path}
-          color={p.color}
-          style="stroke"
-          strokeWidth={p.strokeWidth}
-          strokeJoin="round"
-          strokeCap="round"
-        />
-      ))}
-    </Canvas>
+    <View style={styles.wrapper} {...panResponder.panHandlers}>
+      <Svg
+        ref={svgRef}
+        height="100%"
+        width="100%"
+        viewBox={`0 0 ${width} ${height}`}
+      >
+        {paths.map((path, index) => (
+          <Path
+            key={index}
+            d={path.d}
+            stroke={path.color}
+            strokeWidth={path.strokeWidth}
+            fill="none"
+            strokeLinecap="round"
+            strokeLinejoin="round"
+          />
+        ))}
+        {currentPoints !== '' && (
+          <Path
+            d={currentPoints}
+            stroke={color}
+            strokeWidth={strokeWidth}
+            fill="none"
+            strokeLinecap="round"
+            strokeLinejoin="round"
+          />
+        )}
+      </Svg>
+    </View>
   );
 });
 
 const styles = StyleSheet.create({
-  canvas: {
+  wrapper: {
     flex: 1,
-    backgroundColor: '#fff',
-    width: '100%',
-    height: '100%',
   },
 });
 
