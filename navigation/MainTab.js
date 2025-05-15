@@ -21,9 +21,9 @@ const MainTab = () => {
       case 'Calendar':
         return <CalendarTabView />;
       case 'Diary':
-        return <DiaryTabView entry="default" />;
+        return <DiaryTabView entry="default" exitDiary={() => setCurrentTab('Main')} />;
       case 'DiaryFromMain':
-        return <DiaryTabView entry="fromMain" />;
+        return <DiaryTabView entry="fromMain" exitDiary={() => setCurrentTab('Main')} />;
       case 'MyPage':
         return <MyPageTabView />;
       case 'Chat':
