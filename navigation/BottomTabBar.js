@@ -40,10 +40,10 @@ const BottomTabBar = ({ currentTab, onTabPress }) => {
 const styles = StyleSheet.create({
   tabBar: {
     flexDirection: 'row',
-    height: Platform.OS === 'ios' ? 80 : 90,
+    height: Platform.OS === 'ios' ? 80 : 113.625,
     borderTopLeftRadius: 10,
     borderTopRightRadius: 10,
-    backgroundColor: 'white',
+    backgroundColor: '#F4F0ED',
     justifyContent: 'space-around',
     alignItems: 'center',
     paddingTop: 10,

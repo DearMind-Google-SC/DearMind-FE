@@ -6,7 +6,7 @@ import { useNavigation } from '@react-navigation/native';
 import { format } from 'date-fns';
 import api from '../../api/axios';
 
-const DiarySplashScreen = () => {
+const DiarySplashScreen = ({ goTo }) => {
   const navigation = useNavigation();
   const today = format(new Date(), 'yyyy-MM-dd');
 
@@ -22,7 +22,7 @@ const DiarySplashScreen = () => {
 
         if (res.status === 200) {
           // 이미 일기 있음 → Splash 건너뛰고 바로 DrawingScreen
-          navigation.replace('DrawingScreen');
+          goTo('Drawing');
         }
       } catch (err) {
         if (err.response && err.response.status === 404) {
@@ -41,7 +41,7 @@ const DiarySplashScreen = () => {
 
   const handlePress = () => {
     if (canWrite) {
-      navigation.navigate('DrawingScreen');
+      goTo('Drawing');
     }
   };
 

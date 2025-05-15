@@ -19,11 +19,14 @@ const EMOTION_FACE = {
 
 const CalendarChartScreen = () => {
   const route = useRoute();
-  const { year, month } = route.params;
+  const year = route.params?.year;
+  const month = route.params?.month;
 
   const [data, setData] = useState([]);
 
   useEffect(() => {
+    if (!year || !month) return; // year 또는 month가 없으면 API 호출 생략
+
     const fetchStats = async () => {
       try {
         const res = await api.get('/diary/monthly-emotion-type-count', {
@@ -37,11 +40,18 @@ const CalendarChartScreen = () => {
     fetchStats();
   }, [year, month]);
 
-  const maxCount = data[0].count || 1;
+  const maxCount = data[0]?.count || 1;
+
+  if (!year || !month) {
+    return (
+      <View style={styles.container}>
+        <Text style={{ color: 'red' }}>잘못된 접근입니다.</Text>
+      </View>
+    );
+  }
 
   return (
     <ScrollView contentContainerStyle={styles.container}>
-      {/* 대표 감정 캐릭터 */}
       {data[0] && (
         <View style={styles.characterContainer}>
           <Image source={EMOTION_FACE[data[0].emotionType]} style={styles.characterImage} />
@@ -51,7 +61,6 @@ const CalendarChartScreen = () => {
         </View>
       )}
 
-      {/* 감정 통계 바 */}
       {data.map((item, index) => (
         <View key={index} style={styles.barRow}>
           <View style={[styles.emotionDot, { backgroundColor: EMOTION_COLOR[item.emotionType] }]} />
@@ -74,7 +83,7 @@ const CalendarChartScreen = () => {
 };
 
 const styles = StyleSheet.create({
-  container: { padding: 20, backgroundColor: '#fff' },
+  container: { padding: 20, backgroundColor: '#fff', flex: 1 },
   characterContainer: { alignItems: 'center', marginBottom: 24 },
   characterImage: { width: 100, height: 100, marginBottom: 12 },
   title: { fontSize: 18, fontWeight: '600' },

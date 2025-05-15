@@ -1,49 +1,57 @@
-// screens/diary/RecommendationScreen.js
+import React, { useEffect, useState } from 'react';
+import { View, Text, StyleSheet, FlatList, TouchableOpacity, Alert } from 'react-native';
+import api from '../../api/axios';
 
-import React from 'react';
-import { View, Text, StyleSheet, Image, FlatList, TouchableOpacity } from 'react-native';
-import { useRoute, useNavigation } from '@react-navigation/native';
+const RecommendationScreen = ({ goTo, exitDiary, emotion = 'UNKNOWN' }) => {
+  const [suggestions, setSuggestions] = useState([]);
 
-const emotionCharacterMap = {
-  GLOOMY: require('../../assets/characters/gloomy.png'),
-  ANXIOUS: require('../../assets/characters/anxious.png'),
-  HAPPY: require('../../assets/characters/happy.png'),
-  UNKNOWN: require('../../assets/characters/unknown.png'),
-};
+  useEffect(() => {
+    const fetchSuggestions = async () => {
+      try {
+        const res = await api.post(`/selfcare/recommend?emotion=${emotion}`);
+        setSuggestions(res.data.recommended || []);
+      } catch (err) {
+        console.error('추천 활동 불러오기 실패:', err);
+        Alert.alert('Oops', '추천 활동을 불러오지 못했어요.');
+      }
+    };
 
-const RecommendationScreen = () => {
-  const route = useRoute();
-  const navigation = useNavigation();
-
-  const { emotion = 'UNKNOWN', suggestions = [] } = route.params || {};
+    if (emotion !== 'UNKNOWN') {
+      fetchSuggestions();
+    }
+  }, [emotion]);
 
   const handleComplete = () => {
-    navigation.navigate('MainScreen'); // 또는 다른 종료 화면
+    exitDiary(); // 상위 탭으로 전환
   };
+
+  const renderItem = ({ item }) => (
+    <View style={styles.card}>
+      <Text style={styles.cardTitle}>
+        {item.split(' ')[0]} {item.split(' ')[1]}
+      </Text>
+      <Text style={styles.cardSubtitle}>
+        {item}
+      </Text>
+    </View>
+  );
 
   return (
     <View style={styles.container}>
-      <Image
-        source={emotionCharacterMap[emotion] || emotionCharacterMap.UNKNOWN}
-        style={styles.character}
-        resizeMode="contain"
-      />
-      <Text style={styles.emotionText}>{emotion}</Text>
-      <Text style={styles.message}>Maybe these can help you feel better 💡</Text>
+      <Text style={styles.header}>
+        I’ll suggest activities to{'\n'}help take care of your feelings.
+      </Text>
 
       <FlatList
         data={suggestions}
         keyExtractor={(item, index) => `${item}-${index}`}
-        renderItem={({ item }) => (
-          <View style={styles.suggestionItem}>
-            <Text style={styles.suggestionText}>• {item}</Text>
-          </View>
-        )}
-        contentContainerStyle={styles.suggestionList}
+        renderItem={renderItem}
+        contentContainerStyle={styles.list}
+        showsVerticalScrollIndicator={false}
       />
 
       <TouchableOpacity style={styles.button} onPress={handleComplete}>
-        <Text style={styles.buttonText}>Done</Text>
+        <Text style={styles.buttonText}>Back to Home</Text>
       </TouchableOpacity>
     </View>
   );
@@ -52,44 +60,47 @@ const RecommendationScreen = () => {
 const styles = StyleSheet.create({
   container: {
     flex: 1,
-    backgroundColor: '#FDF8F4',
+    backgroundColor: '#FFFBF8',
     alignItems: 'center',
     padding: 24,
+    paddingTop: 80,
   },
-  character: {
-    width: 140,
-    height: 140,
-    marginBottom: 12,
-  },
-  emotionText: {
-    fontSize: 20,
-    fontWeight: 'bold',
-    color: '#444',
-    marginBottom: 6,
-  },
-  message: {
-    fontSize: 14,
-    color: '#888',
-    marginBottom: 20,
-  },
-  suggestionList: {
-    width: '100%',
-    paddingHorizontal: 12,
-    paddingBottom: 20,
-  },
-  suggestionItem: {
-    marginVertical: 6,
-  },
-  suggestionText: {
-    fontSize: 15,
+  header: {
+    fontSize: 16,
     color: '#333',
+    textAlign: 'center',
+    marginBottom: 24,
+    lineHeight: 22,
+  },
+  list: {
+    width: '100%',
+    gap: 16,
+  },
+  card: {
+    backgroundColor: '#fff',
+    borderRadius: 16,
+    padding: 16,
+    shadowColor: '#000',
+    shadowOpacity: 0.05,
+    shadowRadius: 4,
+    elevation: 1,
+  },
+  cardTitle: {
+    fontSize: 16,
+    fontWeight: 'bold',
+    color: '#EA5E28',
+    marginBottom: 4,
+  },
+  cardSubtitle: {
+    fontSize: 14,
+    color: '#666',
   },
   button: {
     backgroundColor: '#000',
     paddingVertical: 14,
     paddingHorizontal: 40,
     borderRadius: 30,
-    marginTop: 24,
+    marginTop: 32,
   },
   buttonText: {
     color: '#fff',

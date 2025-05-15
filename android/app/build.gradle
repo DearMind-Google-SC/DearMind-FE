@@ -141,7 +141,8 @@ dependencies {
 
     implementation platform("com.google.firebase:firebase-bom:32.7.3") // 이 버전이 firebase-auth 22.1.0 포함함
     implementation "com.google.firebase:firebase-auth"
-    //implementation "com.google.firebase:firebase-analytics"    
+    //implementation "com.google.firebase:firebase-analytics"   
+    implementation "androidx.activity:activity:1.7.2" 
 }
 
 configurations.all {

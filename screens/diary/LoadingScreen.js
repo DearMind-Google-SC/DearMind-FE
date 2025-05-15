@@ -1,43 +1,74 @@
-// screens/diary/LoadingScreen.js
+import React, { useEffect, useState } from 'react';
+import { View, Text, StyleSheet, Animated } from 'react-native';
+import api from '../../api/axios';
 
-import React, { useEffect } from 'react';
-import { View, Text, StyleSheet, ActivityIndicator } from 'react-native';
-import { useNavigation, useRoute } from '@react-navigation/native';
-import api from '../../api/axios'; // 이미 세팅된 axios 인스턴스
-
-const LoadingScreen = () => {
-  const navigation = useNavigation();
-  const route = useRoute();
-
-  const { imageData, text } = route.params || {};
+const LoadingScreen = ({ goTo, imageData, text }) => {
+  const [progress, setProgress] = useState(new Animated.Value(0));
+  const [percentage, setPercentage] = useState(0);
 
   useEffect(() => {
-    const fetchAnalysis = async () => {
+    // 애니메이션: 0% → 100%로 자연스럽게 증가
+    Animated.timing(progress, {
+      toValue: 1,
+      duration: 5000, // 5초 정도 걸리게 설정
+      useNativeDriver: false,
+    }).start();
+
+    const interval = setInterval(() => {
+      setPercentage((prev) => {
+        if (prev >= 99) {
+          clearInterval(interval);
+          return 100;
+        }
+        return prev + 1;
+      });
+    }, 50); // 50ms마다 +1%
+
+    return () => clearInterval(interval);
+  }, []);
+
+  useEffect(() => {
+    const sendData = async () => {
       try {
-        const response = await api.post('/diary', {
+        const res = await api.post('/diary', {
           image: imageData,
           text,
         });
 
-        const { emotion, suggestions } = response.data;
+        const { emotionType, suggestions = [], text: originalText } = res.data;
 
-        navigation.replace('AnalysisResultScreen', {
-          emotion,
+        // 1초 정도 딜레이 후 결과 화면으로 이동
+      setTimeout(() => {
+        goTo('Result', {
+          emotion: emotionType || 'UNKNOWN',
           suggestions,
+          originalText,
         });
+      }, 500);
       } catch (err) {
         console.error('분석 실패:', err);
-        // 오류 시 fallback 처리
+        // 실패 시에도 진행은 되게 하기
+        setTimeout(() => {
+          goTo('Result', { emotion: 'UNKNOWN', suggestions: [], originalText: text });
+        }, 1000);
       }
     };
 
-    fetchAnalysis();
+    sendData();
   }, []);
+
+  const barWidth = progress.interpolate({
+    inputRange: [0, 1],
+    outputRange: ['0%', '100%'],
+  });
 
   return (
     <View style={styles.container}>
-      <Text style={styles.text}>I'm analyzing your feelings...</Text>
-      <ActivityIndicator size="large" color="#FF6F61" />
+      <Text style={styles.subText}>Mind is preparing for a diary reply and a picture.</Text>
+      <Text style={styles.percent}>{percentage}%</Text>
+      <View style={styles.progressBar}>
+        <Animated.View style={[styles.fill, { width: barWidth }]} />
+      </View>
     </View>
   );
 };
@@ -45,15 +76,33 @@ const LoadingScreen = () => {
 const styles = StyleSheet.create({
   container: {
     flex: 1,
-    backgroundColor: '#F9F6F4',
+    backgroundColor: '#FAF7F5',
     justifyContent: 'center',
     alignItems: 'center',
-    padding: 24,
+    paddingHorizontal: 24,
   },
-  text: {
+  subText: {
     fontSize: 16,
-    color: '#666',
+    color: '#333',
     marginBottom: 20,
+    textAlign: 'center',
+  },
+  percent: {
+    fontSize: 48,
+    fontWeight: 'bold',
+    color: '#EA5E28',
+    marginBottom: 16,
+  },
+  progressBar: {
+    width: '80%',
+    height: 12,
+    borderRadius: 6,
+    backgroundColor: '#ddd',
+    overflow: 'hidden',
+  },
+  fill: {
+    height: '100%',
+    backgroundColor: '#EA5E28',
   },
 });
 

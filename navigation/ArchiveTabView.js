@@ -4,7 +4,8 @@ import DiaryDetailScreen from '../screens/archive/DiaryDetailScreen';
 import ReplyDetailScreen from '../screens/archive/ReplyDetailScreen';
 
 const ArchiveTabView = () => {
-  const [screen, setScreen] = useState<'Home' | 'DiaryDetail' | 'ReplyDetail'>('Home');
+  const [screen, setScreen] = useState('Home');
+
 
   switch (screen) {
     case 'Home':

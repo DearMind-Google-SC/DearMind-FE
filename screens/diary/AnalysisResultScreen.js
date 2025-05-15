@@ -1,53 +1,46 @@
-// screens/diary/AnalysisResultScreen.js
-
 import React from 'react';
 import { View, Text, StyleSheet, Image, TouchableOpacity } from 'react-native';
-import { useNavigation, useRoute } from '@react-navigation/native';
 
 const emotionCharacterMap = {
   GLOOMY: require('../../assets/characters/gloomy.png'),
   ANXIOUS: require('../../assets/characters/anxious.png'),
   HAPPY: require('../../assets/characters/happy.png'),
   UNKNOWN: require('../../assets/characters/unknown.png'),
-  // 추가 감정 캐릭터 필요시 확장
 };
 
-const AnalysisResultScreen = () => {
-  const navigation = useNavigation();
-  const route = useRoute();
-
-  const { emotion = 'UNKNOWN', suggestions = [], originalText } = route.params || {};
-
+const AnalysisResultScreen = ({ goTo, emotion = 'UNKNOWN', suggestions = [], originalText = '' }) => {
   const handleAgree = () => {
-    navigation.navigate('RecommendationScreen', {
-      emotion,
-      suggestions,
-    });
+    goTo('Recommend', { emotion }); // ✅ props 넘기기
   };
 
   const handleDisagree = () => {
-    navigation.navigate('EmotionSelectScreen', {
-      originalEmotion: emotion,
-      originalText,
-    });
+    goTo('EmotionSelect', { originalEmotion: emotion, originalText });
   };
-
   return (
     <View style={styles.container}>
-      <Image
-        source={emotionCharacterMap[emotion] || emotionCharacterMap.UNKNOWN}
-        style={styles.character}
-        resizeMode="contain"
-      />
-      <Text style={styles.emotionText}>{emotion}</Text>
-      <Text style={styles.description}>You seem {emotion.toLowerCase()} today. Is that right?</Text>
+      <Text style={styles.title}>Are you okay?</Text>
+      <Text style={styles.subtitle}>You seem {emotion.toLowerCase()} today.</Text>
+
+      <View style={styles.characterContainer}>
+        <Text style={styles.arrow}>{'<'}</Text>
+        <Image
+          source={emotionCharacterMap[emotion] || emotionCharacterMap.UNKNOWN}
+          style={styles.character}
+          resizeMode="contain"
+        />
+        <Text style={styles.arrow}>{'>'}</Text>
+      </View>
+
+      <Text style={[styles.emotionText, emotion === 'GLOOMY' && { color: '#8673FF' }]}>
+        {emotion}
+      </Text>
 
       <View style={styles.buttonWrapper}>
-        <TouchableOpacity style={styles.button} onPress={handleAgree}>
-          <Text style={styles.buttonText}>That's right</Text>
+        <TouchableOpacity style={styles.primaryButton} onPress={handleAgree}>
+          <Text style={styles.primaryText}>That's right</Text>
         </TouchableOpacity>
-        <TouchableOpacity style={[styles.button, styles.secondaryButton]} onPress={handleDisagree}>
-          <Text style={[styles.buttonText, styles.secondaryText]}>I don't think so</Text>
+        <TouchableOpacity style={styles.secondaryButton} onPress={handleDisagree}>
+          <Text style={styles.secondaryText}>I don’t think so</Text>
         </TouchableOpacity>
       </View>
     </View>
@@ -58,48 +51,65 @@ const styles = StyleSheet.create({
   container: {
     flex: 1,
     backgroundColor: '#FFFBF8',
+    padding: 24,
     justifyContent: 'center',
     alignItems: 'center',
-    padding: 24,
+  },
+  title: {
+    fontSize: 16,
+    color: '#333',
+    fontWeight: '500',
+    marginBottom: 4,
+  },
+  subtitle: {
+    fontSize: 14,
+    color: '#333',
+    marginBottom: 24,
+  },
+  characterContainer: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    gap: 24,
+    marginBottom: 12,
+  },
+  arrow: {
+    fontSize: 24,
+    color: '#888',
   },
   character: {
     width: 160,
     height: 160,
-    marginBottom: 12,
   },
   emotionText: {
     fontSize: 20,
     fontWeight: 'bold',
-    marginBottom: 8,
-    color: '#444',
-  },
-  description: {
-    fontSize: 14,
-    color: '#888',
-    marginBottom: 30,
-    textAlign: 'center',
+    marginBottom: 40,
   },
   buttonWrapper: {
-    flexDirection: 'column',
-    gap: 14,
     width: '100%',
+    gap: 12,
   },
-  button: {
+  primaryButton: {
     backgroundColor: '#000',
-    paddingVertical: 14,
     borderRadius: 30,
+    paddingVertical: 14,
     alignItems: 'center',
   },
-  secondaryButton: {
-    backgroundColor: '#F0F0F0',
-  },
-  buttonText: {
+  primaryText: {
     color: '#fff',
     fontWeight: '600',
     fontSize: 16,
   },
+  secondaryButton: {
+    backgroundColor: '#F0F0F0',
+    borderRadius: 30,
+    paddingVertical: 14,
+    alignItems: 'center',
+  },
   secondaryText: {
     color: '#000',
+    fontWeight: '600',
+    fontSize: 16,
   },
 });
 

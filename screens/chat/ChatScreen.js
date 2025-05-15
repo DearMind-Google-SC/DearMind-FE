@@ -57,8 +57,9 @@ const ChatScreen = ({ goBack }) => {
 
       const aiReply = {
         id: `${Date.now()}_ai`,
-        type: 'ai',
-        text: res.data?.reply || res.data?.message || '응답이 없습니다.',
+        type: res.data?.role === 'assistant' ? 'ai' : 'user',
+        text: res.data?.content || '응답이 없습니다.',
+        timestamp: res.data?.timestamp || null,
       };
 
       setMessages(prev => [...prev, aiReply]);
