@@ -1,19 +1,21 @@
 import React from 'react';
-import { View, Text, TouchableOpacity, StyleSheet, Dimensions } from 'react-native';
+import { View, Text, TouchableOpacity, Image, StyleSheet, Dimensions } from 'react-native';
+import Title from '../../assets/images/dear-mind.png';
 
-const { height } = Dimensions.get('window');
+const { height } = Dimensions.get('screen');
 
 const SplashScreen = ({ navigate }) => {
   return (
     <View style={styles.container}>
-      <View style={styles.titleContainer}>
-        <Text style={styles.titleTop}>Dear</Text>
-        <Text style={styles.titleBottom}>Mind</Text>
+      <View style={styles.titleWrapper}>
+        <Image
+          source={Title}
+          style={styles.titleImage}
+          resizeMode="contain"
+        />
       </View>
 
-      <View style={{ flex: 1 }} />
-
-      <View style={styles.buttonContainer}>
+      <View style={styles.buttonWrapper}>
         <TouchableOpacity
           style={styles.buttonDark}
           onPress={() => navigate('SignUp')}
@@ -23,10 +25,7 @@ const SplashScreen = ({ navigate }) => {
 
         <TouchableOpacity
           style={styles.buttonLight}
-          onPress={() =>{
-            console.log('Login pressed');
-            navigate('Login')}
-          } 
+          onPress={() => navigate('Login')}
         >
           <Text style={styles.buttonTextDark}>Log In</Text>
         </TouchableOpacity>
@@ -39,51 +38,52 @@ const styles = StyleSheet.create({
   container: {
     flex: 1,
     backgroundColor: '#F6F1EE',
+    justifyContent: 'space-between',
     alignItems: 'center',
-    paddingVertical: height * 0.12,
+    paddingHorizontal: 24,
   },
-  titleContainer: {
+  titleWrapper: {
     alignItems: 'center',
+    justifyContent: 'center',
+    flex: 1,
   },
-  titleTop: {
-    fontSize: 32,
-    fontWeight: '700',
-    color: '#111',
-    marginBottom: -8,
+  titleImage: {
+    width: 450,
+    height: 310,
+    marginTop: 20,
   },
-  titleBottom: {
-    fontSize: 64,
-    fontWeight: '900',
-    color: '#111',
-  },
-  buttonContainer: {
+  buttonWrapper: {
     width: '100%',
     alignItems: 'center',
+    paddingBottom: height * 0.1,
+    gap: 5,
   },
   buttonDark: {
     backgroundColor: '#111',
-    paddingVertical: 16,
-    borderRadius: 32,
-    width: '80%',
+    paddingVertical: height * 0.025,
+    borderRadius: 999,
+    width: '100%',
     alignItems: 'center',
     marginBottom: 12,
   },
   buttonLight: {
     backgroundColor: '#fff',
-    paddingVertical: 16,
-    borderRadius: 32,
-    width: '80%',
+    paddingVertical: height * 0.025,
+    borderRadius: 999,
+    width: '100%',
     alignItems: 'center',
   },
   buttonTextLight: {
     color: '#fff',
-    fontSize: 16,
-    fontWeight: '600',
+    fontSize: 17.7,
+    fontWeight: 'bold',
+    fontFamily: 'Pretendard-Regular',
   },
   buttonTextDark: {
     color: '#111',
-    fontSize: 16,
-    fontWeight: '600',
+    fontSize: 17.7,
+    fontWeight: 'bold',
+    fontFamily: 'Pretendard-Regular',
   },
 });
 

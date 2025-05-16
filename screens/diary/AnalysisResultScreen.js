@@ -1,5 +1,7 @@
 import React from 'react';
-import { View, Text, StyleSheet, Image, TouchableOpacity } from 'react-native';
+import { Dimensions, View, Text, StyleSheet, Image, TouchableOpacity } from 'react-native';
+
+const { width, height } = Dimensions.get('window');
 
 const emotionCharacterMap = {
   GLOOMY: require('../../assets/characters/gloomy.png'),
@@ -8,30 +10,46 @@ const emotionCharacterMap = {
   UNKNOWN: require('../../assets/characters/unknown.png'),
 };
 
-const AnalysisResultScreen = ({ goTo, emotion = 'UNKNOWN', suggestions = [], originalText = '' }) => {
+const emotionColorMap = {
+  GLOOMY: '#7a7eff',
+  HAPPY: '#58c663',
+  ANXIOUS: '#ffa63f',
+  ANGRY: '#Ed3b3b',
+  UNKNOWN: '#b9b6b4',
+};
+
+const AnalysisResultScreen = ({
+  goTo,
+  emotion = 'UNKNOWN',
+  suggestions = [],
+  originalText = '',
+  recordId = '',
+}) => {
   const handleAgree = () => {
-    goTo('Recommend', { emotion }); // ✅ props 넘기기
+    goTo('Recommend', { emotion });
   };
 
   const handleDisagree = () => {
-    goTo('EmotionSelect', { originalEmotion: emotion, originalText });
+    goTo('EmotionSelect', {
+      originalEmotion: emotion,
+      recordId, // ✅ 반드시 넘겨줘야 EmotionSelect에서 PATCH 가능
+    });
   };
+
   return (
     <View style={styles.container}>
       <Text style={styles.title}>Are you okay?</Text>
       <Text style={styles.subtitle}>You seem {emotion.toLowerCase()} today.</Text>
 
       <View style={styles.characterContainer}>
-        <Text style={styles.arrow}>{'<'}</Text>
         <Image
           source={emotionCharacterMap[emotion] || emotionCharacterMap.UNKNOWN}
           style={styles.character}
           resizeMode="contain"
         />
-        <Text style={styles.arrow}>{'>'}</Text>
       </View>
 
-      <Text style={[styles.emotionText, emotion === 'GLOOMY' && { color: '#8673FF' }]}>
+      <Text style={[styles.emotionText, { color: emotionColorMap[emotion] || '#b9b6b4' }]}>
         {emotion}
       </Text>
 
@@ -50,66 +68,71 @@ const AnalysisResultScreen = ({ goTo, emotion = 'UNKNOWN', suggestions = [], ori
 const styles = StyleSheet.create({
   container: {
     flex: 1,
-    backgroundColor: '#FFFBF8',
-    padding: 24,
+    backgroundColor: '#F4F0ED',
+    paddingHorizontal: 24,
     justifyContent: 'center',
     alignItems: 'center',
   },
   title: {
-    fontSize: 16,
-    color: '#333',
+    fontSize: 28,
     fontWeight: '500',
-    marginBottom: 4,
+    color: '#2E2E2E',
+    lineHeight: 28,
   },
   subtitle: {
-    fontSize: 14,
-    color: '#333',
+    fontSize: 28,
+    fontWeight: '700',
+    color: '#2E2E2E',
     marginBottom: 24,
   },
   characterContainer: {
     flexDirection: 'row',
     alignItems: 'center',
     gap: 24,
-    marginBottom: 12,
-  },
-  arrow: {
-    fontSize: 24,
-    color: '#888',
+    marginBottom: 20,
   },
   character: {
-    width: 160,
-    height: 160,
+    width: 220,
+    height: 250,
+    alignSelf: 'center',
+    marginBottom: 16,
+    marginLeft: 14,
   },
   emotionText: {
-    fontSize: 20,
-    fontWeight: 'bold',
-    marginBottom: 40,
+    fontSize: 33,
+    fontWeight: '700',
+    marginBottom: 32,
+    letterSpacing: 0.6,
   },
   buttonWrapper: {
     width: '100%',
-    gap: 12,
+    gap: 0,
   },
   primaryButton: {
-    backgroundColor: '#000',
-    borderRadius: 30,
-    paddingVertical: 14,
+    backgroundColor: '#2E2E2E',
+    paddingVertical: height * 0.025,
+    borderRadius: 999,
     alignItems: 'center',
+    marginBottom: height * 0.02,
   },
   primaryText: {
-    color: '#fff',
-    fontWeight: '600',
-    fontSize: 16,
+    fontFamily: 'Pretendard-Regular',
+    color: '#FFF',
+    fontSize: 17.7,
+    fontWeight: 'bold',
   },
   secondaryButton: {
-    backgroundColor: '#F0F0F0',
-    borderRadius: 30,
-    paddingVertical: 14,
+    backgroundColor: '#FFF',
+    paddingVertical: height * 0.025,
+    borderRadius: 999,
     alignItems: 'center',
+    marginBottom: height * 0.02,
   },
   secondaryText: {
-    color: '#000',
-    fontWeight: '600',
-    fontSize: 16,
+    color: '#2E2E2E',
+    fontSize: 17.7,
+    fontWeight: 'bold',
+    fontFamily: 'Pretendard-Regular',
   },
 });
 

@@ -25,7 +25,7 @@ const MainTab = () => {
       case 'DiaryFromMain':
         return <DiaryTabView entry="fromMain" exitDiary={() => setCurrentTab('Main')} />;
       case 'MyPage':
-        return <MyPageTabView />;
+        return <MyPageTabView navigate={setCurrentTab} />;
       case 'Chat':
         return <ChatScreen goBack={() => setCurrentTab('Main')} />;
       default:
@@ -36,10 +36,13 @@ const MainTab = () => {
   return (
     <View style={styles.container}>
       {renderTab()}
-      <BottomTabBar
-        currentTab={currentTab === 'DiaryFromMain' ? 'Diary' : currentTab}
-        onTabPress={setCurrentTab}
-      />
+
+      {currentTab !== 'Chat' && (
+        <BottomTabBar
+          currentTab={currentTab === 'DiaryFromMain' ? 'Diary' : currentTab}
+          onTabPress={setCurrentTab}
+        />
+      )}
     </View>
   );
 };

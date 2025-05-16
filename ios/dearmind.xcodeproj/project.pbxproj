@@ -16,6 +16,8 @@
 		81AB9BB82411601600AC10FF /* LaunchScreen.storyboard in Resources */ = {isa = PBXBuildFile; fileRef = 81AB9BB72411601600AC10FF /* LaunchScreen.storyboard */; };
 		10CE84C68014408891C7063A /* Pretendard-Bold.ttf in Resources */ = {isa = PBXBuildFile; fileRef = D83D0D637A8D4174B2877DDF /* Pretendard-Bold.ttf */; };
 		AA97AB9CE9CE4897AA9E529F /* Pretendard-Regular.ttf in Resources */ = {isa = PBXBuildFile; fileRef = 0611102E80824FE896EC5966 /* Pretendard-Regular.ttf */; };
+		0477ED51C80D440E987C08F7 /* Recoleta-RegularDEMO.otf in Resources */ = {isa = PBXBuildFile; fileRef = F4EFFA8A11804545B0DF623A /* Recoleta-RegularDEMO.otf */; };
+		23A0684BFAA44738A6E838C7 /* oddlini-extra-black.ttf in Resources */ = {isa = PBXBuildFile; fileRef = BE56EB0CFD504C26BDBEBDBE /* oddlini-extra-black.ttf */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXContainerItemProxy section */
@@ -48,6 +50,8 @@
 		ED297162215061F000B7C4FE /* JavaScriptCore.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = JavaScriptCore.framework; path = System/Library/Frameworks/JavaScriptCore.framework; sourceTree = SDKROOT; };
 		D83D0D637A8D4174B2877DDF /* Pretendard-Bold.ttf */ = {isa = PBXFileReference; name = "Pretendard-Bold.ttf"; path = "../assets/fonts/Pretendard-Bold.ttf"; sourceTree = "<group>"; fileEncoding = undefined; lastKnownFileType = unknown; explicitFileType = undefined; includeInIndex = 0; };
 		0611102E80824FE896EC5966 /* Pretendard-Regular.ttf */ = {isa = PBXFileReference; name = "Pretendard-Regular.ttf"; path = "../assets/fonts/Pretendard-Regular.ttf"; sourceTree = "<group>"; fileEncoding = undefined; lastKnownFileType = unknown; explicitFileType = undefined; includeInIndex = 0; };
+		F4EFFA8A11804545B0DF623A /* Recoleta-RegularDEMO.otf */ = {isa = PBXFileReference; name = "Recoleta-RegularDEMO.otf"; path = "../assets/fonts/Recoleta-RegularDEMO.otf"; sourceTree = "<group>"; fileEncoding = undefined; lastKnownFileType = unknown; explicitFileType = undefined; includeInIndex = 0; };
+		BE56EB0CFD504C26BDBEBDBE /* oddlini-extra-black.ttf */ = {isa = PBXFileReference; name = "oddlini-extra-black.ttf"; path = "../assets/fonts/oddlini-extra-black.ttf"; sourceTree = "<group>"; fileEncoding = undefined; lastKnownFileType = unknown; explicitFileType = undefined; includeInIndex = 0; };
 /* End PBXFileReference section */
 
 /* Begin PBXFrameworksBuildPhase section */
@@ -158,6 +162,8 @@
 			children = (
 				D83D0D637A8D4174B2877DDF /* Pretendard-Bold.ttf */,
 				0611102E80824FE896EC5966 /* Pretendard-Regular.ttf */,
+				F4EFFA8A11804545B0DF623A /* Recoleta-RegularDEMO.otf */,
+				BE56EB0CFD504C26BDBEBDBE /* oddlini-extra-black.ttf */,
 			);
 			name = Resources;
 			sourceTree = "<group>";
@@ -261,6 +267,8 @@
 				13B07FBF1A68108700A75B9A /* Images.xcassets in Resources */,
 				10CE84C68014408891C7063A /* Pretendard-Bold.ttf in Resources */,
 				AA97AB9CE9CE4897AA9E529F /* Pretendard-Regular.ttf in Resources */,
+				0477ED51C80D440E987C08F7 /* Recoleta-RegularDEMO.otf in Resources */,
+				23A0684BFAA44738A6E838C7 /* oddlini-extra-black.ttf in Resources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};

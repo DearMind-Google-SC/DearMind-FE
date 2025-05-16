@@ -5,17 +5,22 @@ import ReplyDetailScreen from '../screens/archive/ReplyDetailScreen';
 
 const ArchiveTabView = () => {
   const [screen, setScreen] = useState('Home');
+  const [selectedId, setSelectedId] = useState(null);
 
+  const goTo = (target, id = null) => {
+    setSelectedId(id);
+    setScreen(target);
+  };
 
   switch (screen) {
     case 'Home':
-      return <ArchiveHomeScreen goTo={setScreen} />;
+      return <ArchiveHomeScreen goTo={goTo} />;
     case 'DiaryDetail':
-      return <DiaryDetailScreen goBack={() => setScreen('Home')} />;
+      return <DiaryDetailScreen id={selectedId} goBack={() => setScreen('Home')} />;
     case 'ReplyDetail':
-      return <ReplyDetailScreen goBack={() => setScreen('Home')} />;
+      return <ReplyDetailScreen id={selectedId} goBack={() => setScreen('Home')} />;
     default:
-      return <ArchiveHomeScreen goTo={setScreen} />;
+      return <ArchiveHomeScreen goTo={goTo} />;
   }
 };
 

@@ -1,84 +1,103 @@
-// screens/diary/EmotionSelectScreen.js
+import React, { useState, useEffect } from 'react';
+import {
+  View,
+  Text,
+  StyleSheet,
+  Image,
+  TouchableOpacity,
+  Alert,
+  Dimensions,
+} from 'react-native';
+import api from '../../api/axios';
 
-import React, { useState } from 'react';
-import { View, Text, StyleSheet, Image, TouchableOpacity } from 'react-native';
-import { useNavigation, useRoute } from '@react-navigation/native';
+const { height } = Dimensions.get('screen');
 
 const EMOTIONS = [
   {
     id: 'HAPPY',
     label: 'HAPPY',
-    color: '#7ECF6E',
+    color: '#58c663',
     image: require('../../assets/characters/happy.png'),
   },
   {
     id: 'GLOOMY',
     label: 'GLOOMY',
-    color: '#9A8FFF',
+    color: '#7a7eff',
     image: require('../../assets/characters/gloomy.png'),
   },
   {
     id: 'ANXIOUS',
     label: 'ANXIOUS',
-    color: '#E8AA4C',
+    color: '#ffa63f',
     image: require('../../assets/characters/anxious.png'),
   },
   {
     id: 'ANGRY',
     label: 'ANGRY',
-    color: '#E25A4A',
+    color: '#Ed3b3b',
     image: require('../../assets/characters/angry.png'),
   },
 ];
 
-const EmotionSelectScreen = () => {
-  const navigation = useNavigation();
-  const route = useRoute();
-  const { originalText } = route.params || {};
-
+const EmotionSelectScreen = ({ goTo, recordId, exitDiary }) => {
   const [index, setIndex] = useState(0);
   const emotion = EMOTIONS[index];
 
-  const handleNext = () => {
-    setIndex((prev) => (prev + 1) % EMOTIONS.length);
-  };
+  useEffect(() => {
+    console.log('🧾 EmotionSelectScreen에 전달된 recordId:', recordId);
+  }, []);
 
   const handlePrev = () => {
     setIndex((prev) => (prev - 1 + EMOTIONS.length) % EMOTIONS.length);
   };
 
-  const handleSelect = () => {
-    navigation.replace('RecommendationScreen', {
-      emotion: emotion.id,
-      suggestions: ['Try deep breathing', 'Take a walk', 'Write your thoughts'], // 임시 추천
-    });
+  const handleNext = () => {
+    setIndex((prev) => (prev + 1) % EMOTIONS.length);
+  };
+
+  const handleSelect = async () => {
+    if (!recordId) {
+      Alert.alert('오류', '감정 기록 ID가 유실되었습니다.');
+      exitDiary();
+      return;
+    }
+    try {
+      await api.patch(`/diary/${recordId}/emotion-type`, {
+        emotionType: emotion.id,
+      });
+      exitDiary();
+    } catch (err) {
+      console.error('감정 업데이트 실패:', err);
+      Alert.alert('오류', '감정 업데이트에 실패했습니다.');
+    }
   };
 
   return (
     <View style={styles.container}>
-      <Text style={styles.question}>How are you feeling?</Text>
-      <Text style={styles.subtext}>Choose your current emotion</Text>
+      <Text style={styles.title}>How are you feeling?</Text>
+      <Text style={styles.subtitle}>Choose your current emotion</Text>
 
-      <View style={styles.characterWrapper}>
-        <TouchableOpacity onPress={handlePrev} style={styles.arrow}>
-          <Text style={styles.arrowText}>{'<'}</Text>
+      <View style={styles.characterContainer}>
+        <TouchableOpacity onPress={handlePrev}>
+          <Text style={styles.arrow}>{'<'}</Text>
         </TouchableOpacity>
 
-        <View style={styles.characterBlock}>
-          <Image source={emotion.image} style={styles.characterImage} />
-          <Text style={[styles.emotionLabel, { color: emotion.color }]}>
-            {emotion.label}
-          </Text>
-        </View>
+        <Image source={emotion.image} style={styles.character} resizeMode="contain" />
 
-        <TouchableOpacity onPress={handleNext} style={styles.arrow}>
-          <Text style={styles.arrowText}>{'>'}</Text>
+        <TouchableOpacity onPress={handleNext}>
+          <Text style={styles.arrow}>{'>'}</Text>
         </TouchableOpacity>
       </View>
 
-      <TouchableOpacity style={styles.selectButton} onPress={handleSelect}>
-        <Text style={styles.selectText}>I chose it</Text>
-      </TouchableOpacity>
+      <Text style={[styles.emotionText, { color: emotion.color }]}>
+        {emotion.label}
+      </Text>
+
+      <View style={styles.buttonWrapper}>
+        <TouchableOpacity style={styles.primaryButton} onPress={handleSelect}>
+          <Text style={styles.primaryText}>I choose this</Text>
+        </TouchableOpacity>
+      </View>
     </View>
   );
 };
@@ -86,57 +105,62 @@ const EmotionSelectScreen = () => {
 const styles = StyleSheet.create({
   container: {
     flex: 1,
-    backgroundColor: '#FDF9F5',
-    alignItems: 'center',
+    backgroundColor: '#F4F0ED',
+    paddingHorizontal: 24,
     justifyContent: 'center',
-    padding: 24,
+    alignItems: 'center',
   },
-  question: {
-    fontSize: 18,
-    fontWeight: '600',
-    color: '#333',
-    marginBottom: 4,
+  title: {
+    fontSize: 28,
+    fontWeight: '500',
+    color: '#2E2E2E',
+    lineHeight: 28,
   },
-  subtext: {
-    fontSize: 14,
-    color: '#888',
-    marginBottom: 30,
+  subtitle: {
+    fontSize: 28,
+    fontWeight: '700',
+    color: '#2E2E2E',
+    marginBottom: 24,
   },
-  characterWrapper: {
+  characterContainer: {
     flexDirection: 'row',
     alignItems: 'center',
-    marginBottom: 32,
+    gap: 24,
+    marginBottom: 20,
   },
   arrow: {
-    paddingHorizontal: 20,
-  },
-  arrowText: {
-    fontSize: 28,
+    fontSize: 40,
     color: '#888',
+    paddingHorizontal: 16,
   },
-  characterBlock: {
-    alignItems: 'center',
-    width: 180,
+  character: {
+    width: 220,
+    height: 250,
+    alignSelf: 'center',
+    marginBottom: 16,
+    marginLeft: 14,
   },
-  characterImage: {
-    width: 120,
-    height: 120,
-    marginBottom: 12,
-  },
-  emotionLabel: {
-    fontSize: 20,
+  emotionText: {
+    fontSize: 33,
     fontWeight: '700',
+    marginBottom: 32,
+    letterSpacing: 0.6,
   },
-  selectButton: {
-    backgroundColor: '#000',
-    paddingVertical: 14,
-    paddingHorizontal: 40,
-    borderRadius: 30,
+  buttonWrapper: {
+    width: '100%',
   },
-  selectText: {
-    color: '#fff',
-    fontSize: 16,
-    fontWeight: '600',
+  primaryButton: {
+    backgroundColor: '#2E2E2E',
+    paddingVertical: height * 0.025,
+    borderRadius: 999,
+    alignItems: 'center',
+    marginBottom: height * 0.02,
+  },
+  primaryText: {
+    fontFamily: 'Pretendard-Regular',
+    color: '#FFF',
+    fontSize: 17.7,
+    fontWeight: 'bold',
   },
 });
 

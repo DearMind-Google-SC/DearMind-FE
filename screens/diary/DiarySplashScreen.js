@@ -1,17 +1,23 @@
-// screens/diary/DiarySplashScreen.js
-
 import React, { useEffect, useState } from 'react';
-import { View, Text, StyleSheet, TouchableOpacity, Image, Alert, ActivityIndicator } from 'react-native';
-import { useNavigation } from '@react-navigation/native';
+import {
+  View,
+  Text,
+  StyleSheet,
+  TouchableOpacity,
+  Image,
+  Alert,
+  ActivityIndicator,
+  Dimensions
+} from 'react-native';
 import { format } from 'date-fns';
 import api from '../../api/axios';
+const { width, height } = Dimensions.get('screen');
 
 const DiarySplashScreen = ({ goTo }) => {
-  const navigation = useNavigation();
   const today = format(new Date(), 'yyyy-MM-dd');
 
   const [loading, setLoading] = useState(true);
-  const [canWrite, setCanWrite] = useState(false); // false: 작성 불가(이미 있음), true: 작성 가능
+  const [canWrite, setCanWrite] = useState(false); // 일기 없으면 true
 
   useEffect(() => {
     const checkDiary = async () => {
@@ -21,13 +27,12 @@ const DiarySplashScreen = ({ goTo }) => {
         });
 
         if (res.status === 200) {
-          // 이미 일기 있음 → Splash 건너뛰고 바로 DrawingScreen
+          // 이미 일기 있음 → 바로 DrawingScreen으로 이동
           goTo('Drawing');
         }
       } catch (err) {
-        if (err.response && err.response.status === 404) {
-          // 일기 없음 → 화면 렌더링 후 버튼으로 이동
-          setCanWrite(true);
+        if (err.response?.status === 404) {
+          setCanWrite(true); // 일기 없음 → 버튼 보여줌
         } else {
           Alert.alert('오류', '감정 기록을 확인할 수 없습니다.');
         }
@@ -76,43 +81,51 @@ const DiarySplashScreen = ({ goTo }) => {
 const styles = StyleSheet.create({
   container: {
     flex: 1,
-    backgroundColor: '#FAF7F5',
+    backgroundColor: '#F4F0ED',
     alignItems: 'center',
     justifyContent: 'center',
     paddingHorizontal: 24,
   },
   title: {
-    fontSize: 16,
-    color: '#aaa',
+    fontSize: 24,
+    color: '#B9B6B4',
     marginBottom: 4,
   },
   date: {
-    fontSize: 18,
-    fontWeight: '600',
+    fontSize: 28,
+    fontWeight: '700',
+    color: '#2E2E2E',
     marginBottom: 24,
   },
   image: {
-    width: 160,
-    height: 160,
+    width: 220,
+    height: 250,
+    alignSelf: 'center',
     marginBottom: 16,
+    marginLeft: 14,
   },
   emotion: {
-    fontSize: 20,
-    fontWeight: 'bold',
-    color: '#999',
+    fontSize: 33,
+    fontWeight: '700',
+    color: '#B9B6B4',
     marginBottom: 32,
+    letterSpacing: 0.6,
   },
   button: {
-    backgroundColor: '#000',
-    paddingVertical: 14,
-    paddingHorizontal: 32,
-    borderRadius: 30,
+    backgroundColor: '#2E2E2E',
+    paddingVertical: height * 0.025,
+    borderRadius: 999,
+    alignItems: 'center',
+    marginBottom: height * 0.02,
+    width: '100%',
   },
   buttonText: {
-    color: '#fff',
-    fontWeight: '600',
-    fontSize: 16,
+    color: '#FFFFFF',
+    fontSize: 17.7,
+    fontWeight: 'bold',
+    fontFamily: 'Pretendard-Regular',
   },
+
 });
 
 export default DiarySplashScreen;

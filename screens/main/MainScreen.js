@@ -1,11 +1,11 @@
 import React, { useEffect, useState } from 'react';
-import Icon from 'react-native-vector-icons/Feather';
 import {
   View, Text, StyleSheet, TouchableOpacity,
   Image, ScrollView, Dimensions
 } from 'react-native';
 import api from '../../api/axios';
-const { width,height } = Dimensions.get('window');
+import BellIcon from '../../assets/icons/bell.png';
+import ArrowIcon from '../../assets/icons/arrow-up-right.png';
 /**
  * @param {{ navigate: (screen: string) => void }} props
  */
@@ -48,7 +48,7 @@ const MainScreen = ({ navigate }) => {
   return (
     <ScrollView contentContainerStyle={styles.container}>
       <View style={styles.topRightIcon}>
-        <Icon name="bell" size={22} color="#EB6A39" />
+        <Image source={BellIcon} style={styles.icon22} />
       </View>
 
       <Text style={styles.title}>Hello, {userName}.</Text>
@@ -71,7 +71,7 @@ const MainScreen = ({ navigate }) => {
           onPress={() => navigate('DiaryFromMain')}
         >
           <Text style={styles.buttonTextMain}>Draw{'\n'}with Mind</Text>
-          <Icon name="arrow-up-right" size={18} color="#F4F0ED" style={styles.arrowIcon} />
+          <Image source={ArrowIcon} style={styles.arrowIconImage} />
         </TouchableOpacity>
 
         <View style={styles.rightButtons}>
@@ -80,7 +80,7 @@ const MainScreen = ({ navigate }) => {
             onPress={() => navigate('Chat')}
           >
             <Text style={styles.buttonText}>Chat with Mind</Text>
-            <Icon name="arrow-up-right" size={18} color="#F4F0ED" style={styles.arrowIcon} />
+            <Image source={ArrowIcon} style={styles.arrowIconImage} />
           </TouchableOpacity>
 
           <TouchableOpacity
@@ -88,7 +88,7 @@ const MainScreen = ({ navigate }) => {
             onPress={() => navigate('Archive')}
           >
             <Text style={styles.buttonText}>Mood Archive</Text>
-            <Icon name="arrow-up-right" size={18} color="#F4F0ED" style={styles.arrowIcon} />
+            <Image source={ArrowIcon} style={styles.arrowIconImage} />
           </TouchableOpacity>
         </View>
       </View>
@@ -114,12 +114,12 @@ const styles = StyleSheet.create({
     flexGrow: 1,
     backgroundColor: '#F4F0ED',
     padding: 24,
-    paddingBottom: 100, 
+    paddingBottom:60, 
   },
   topRightIcon: {
     position: 'absolute',
-    top: 16,
-    right: 16,
+    marginTop: 80,
+    right: 30,
     zIndex: 10,
   },
   title: {
@@ -127,42 +127,44 @@ const styles = StyleSheet.create({
     lineHeight: 50,
     fontWeight: '500',
     color: '#2E2E2E',
-    marginTop: 64,
+    marginTop: 45,
     textAlign: 'left',
     maxWidth: 400,
     paddingLeft: 10,
-    letterSpacing: 0.5,
+    letterSpacing: 0,
+    fontFamily: 'Pretendard-Regular',
   },
   subtitle: {
     fontSize: 44,
     lineHeight: 46,
-    fontWeight: '500',
+    fontWeight: '600',
     color: '#2E2E2E',
-    marginBottom: 32,
+    marginBottom: 22,
     textAlign: 'left',
     maxWidth: 420,
-    paddingLeft: 10,
-    letterSpacing: 0.5,
+    paddingLeft: 12,
+    letterSpacing: 0,
     paddingBottom: 10,
+    fontFamily: 'Pretendard-Regular',
   },
   bold: {
-    fontWeight: '700',
+    fontWeight: '800',
   },
   character: {
-    width: 200,
-    height: 200,
+    width: 220,
+    height: 250,
     alignSelf: 'center',
-    marginBottom: 60,
+    marginBottom: 40,
     resizeMode: 'contain',
   },
   buttonGrid: {
     flexDirection: 'row',
-    gap: 16,
+    gap: 5,
     marginBottom: 40,
   },
   bigButton: {
     flex: 1,
-    height: 300,
+    height: 260,
     justifyContent: 'center',
     backgroundColor: '#FF5900',
     borderRadius: 16,
@@ -174,11 +176,11 @@ const styles = StyleSheet.create({
   rightButtons: {
     flex: 1,
     justifyContent: 'space-between',
-    gap: 16,
+    gap: 5,
   },
   gridButton: {
     flex: 1,
-    height: 116,
+    height: 80,
     backgroundColor: '#333',
     borderRadius: 12,
     justifyContent: 'flex-end',
@@ -189,22 +191,27 @@ const styles = StyleSheet.create({
   },
   buttonText: {
     color: '#fff',
-    fontWeight: '500',
-    fontSize: 17,
+    fontWeight: '400',
+    fontSize: 22,
     textAlign: 'left',
     lineHeight: 22,
+    fontFamily: 'Pretendard-Regular',
   },
   buttonTextMain: {
     color: '#fff',
-    fontWeight: '500',
-    fontSize: 30,
+    fontWeight: '400',
+    fontSize: 40,
     textAlign: 'left',
-    lineHeight: 30,
+    lineHeight: 40,
+    fontFamily: 'Pretendard-Regular',
   },
-  arrowIcon: {
+  arrowIconImage: {
+    width: 34,
+    height: 34,
     position: 'absolute',
     top: 14,
     right: 14,
+    tintColor: '#F4F0ED',
   },
   boosterWrapper: {
     marginTop: 40,
@@ -214,6 +221,7 @@ const styles = StyleSheet.create({
     fontWeight: '600',
     marginBottom: 12,
     color: '#222',
+    fontFamily: 'Pretendard-Regular',
   },
   boosterCard: {
     backgroundColor: '#fff',
@@ -231,11 +239,17 @@ const styles = StyleSheet.create({
     fontWeight: '700',
     fontSize: 14,
     color: '#EB6A39',
+    fontFamily: 'Pretendard-Regular',
   },
   boosterDesc: {
     color: '#777',
     fontSize: 13,
     marginTop: 4,
+    fontFamily: 'Pretendard-Regular',
+  },
+  icon22: {
+    width: 38,
+    height: 38,
   },
 });
 

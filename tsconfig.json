@@ -3,6 +3,6 @@
   "compilerOptions": {
     "strict": true
   },
-  "include": ["**/*.ts", "**/*.tsx", "screens/auth/SignUpScreen.js"],
+  "include": ["**/*.ts", "**/*.tsx", "screens/auth/SignUpScreen.js", "utils/reponsive.js"],
   "exclude": ["node_modules"]
 }

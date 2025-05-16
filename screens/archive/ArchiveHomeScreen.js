@@ -5,13 +5,13 @@ import {
   StyleSheet,
   Pressable,
   FlatList,
-  TouchableOpacity,
   Modal,
+  TouchableOpacity,
 } from 'react-native';
 import dayjs from 'dayjs';
 import api from '../../api/axios';
 import ArchiveCard from '../../components/ArchiveCard';
-import { useNavigation } from '@react-navigation/native';
+import DropdownSelector from '../../components/DropdownSelector';
 
 const MONTHS = [
   'January', 'February', 'March', 'April', 'May', 'June',
@@ -20,8 +20,7 @@ const MONTHS = [
 
 const YEARS = Array.from({ length: 10 }, (_, i) => dayjs().year() - i);
 
-const ArchiveHomeScreen = () => {
-  const navigation = useNavigation();
+const ArchiveHomeScreen = ({ goTo }) => {
   const now = dayjs();
   const [tab, setTab] = useState('my');
   const [selectedMonth, setSelectedMonth] = useState(now.month());
@@ -36,13 +35,14 @@ const ArchiveHomeScreen = () => {
     const fetchArchive = async () => {
       try {
         setIsLoading(true);
+
+        const params = { year: selectedYear, month: selectedMonth + 1 };
+
         const res = tab === 'my'
-          ? await api.get('/diary', {
-              params: { year: selectedYear, month: selectedMonth + 1 },
-            })
-          : await api.get('/reward', {
-              params: { year: selectedYear, month: selectedMonth + 1 },
-            });
+          ? await api.get('/diary/by-month', { params })
+          : await api.get('/reward/monthly', { params });
+        console.log('Archive 불러오기 성공:', res.data);
+
         setDiaryList(res.data);
       } catch (e) {
         console.error('Archive 불러오기 실패:', e);
@@ -51,7 +51,7 @@ const ArchiveHomeScreen = () => {
       }
     };
 
-    fetchArchive();
+    fetchArchive(); // ✅ 반드시 호출 필요
   }, [tab, selectedMonth, selectedYear]);
 
   const renderItem = ({ item }) => (
@@ -61,9 +61,9 @@ const ArchiveHomeScreen = () => {
       summary={(item.summary || (item.text && item.text.slice(0, 30))) || ''}
       onPress={() => {
         if (tab === 'my') {
-          navigation.navigate('DiaryDetailScreen', { id: item.id });
+          goTo('DiaryDetail', item.id);
         } else {
-          navigation.navigate('ReplyDetailScreen', { id: item.id });
+          goTo('ReplyDetail', item.id);
         }
       }}
     />
@@ -79,15 +79,18 @@ const ArchiveHomeScreen = () => {
           <Text style={[styles.tabText, tab === 'reply' && styles.tabTextActive]}>Mind's Reply</Text>
         </Pressable>
       </View>
+
       <View style={styles.tabUnderline} />
 
       <View style={styles.dropdownContainer}>
-        <TouchableOpacity style={styles.dropdownButton} onPress={() => setMonthModalVisible(true)}>
-          <Text style={styles.dropdownText}>{MONTHS[selectedMonth].slice(0, 3)}</Text>
-        </TouchableOpacity>
-        <TouchableOpacity style={styles.dropdownButton} onPress={() => setYearModalVisible(true)}>
-          <Text style={styles.dropdownText}>{selectedYear}</Text>
-        </TouchableOpacity>
+        <DropdownSelector
+          label={MONTHS[selectedMonth].slice(0, 3)}
+          onPress={() => setMonthModalVisible(true)}
+        />
+        <DropdownSelector
+          label={selectedYear}
+          onPress={() => setYearModalVisible(true)}
+        />
       </View>
 
       <FlatList
@@ -101,6 +104,7 @@ const ArchiveHomeScreen = () => {
         onRefresh={() => {}}
       />
 
+      {/* Month Modal */}
       <Modal visible={monthModalVisible} transparent animationType="slide">
         <View style={styles.modalOverlay}>
           <View style={styles.modal}>
@@ -118,6 +122,7 @@ const ArchiveHomeScreen = () => {
         </View>
       </Modal>
 
+      {/* Year Modal */}
       <Modal visible={yearModalVisible} transparent animationType="slide">
         <View style={styles.modalOverlay}>
           <View style={styles.modal}>
@@ -139,25 +144,53 @@ const ArchiveHomeScreen = () => {
 };
 
 const styles = StyleSheet.create({
-  container: { flex: 1, backgroundColor: 'white', padding: 16 },
-  tabContainer: { flexDirection: 'row', justifyContent: 'space-around' },
+  container: { flex: 1, backgroundColor: '#FDF8F3', paddingHorizontal: 16, paddingTop: 30 },
+  tabContainer: {
+    flexDirection: 'row',
+    justifyContent: 'space-around',
+  },
   tab: { paddingVertical: 8, paddingHorizontal: 16 },
   tabActive: {},
-  tabText: { fontSize: 16, color: '#aaa' },
-  tabTextActive: { color: '#000', fontWeight: '600' },
-  tabUnderline: { height: 1, backgroundColor: '#ccc', marginTop: 4, marginBottom: 12 },
-  dropdownContainer: { flexDirection: 'row', gap: 12, marginBottom: 16 },
-  dropdownButton: {
-    backgroundColor: '#000',
-    paddingVertical: 6,
-    paddingHorizontal: 12,
-    borderRadius: 6,
+  tabText: {
+    fontSize: 24,
+    color: '#B9b6b4',
+    marginBottom: 8,
+    fontFamily: 'Pretendard-Regular',
+    fontWeight: '600',
   },
-  dropdownText: { color: '#fff', fontWeight: '600' },
-  list: { gap: 12 },
-  modalOverlay: { flex: 1, justifyContent: 'center', backgroundColor: 'rgba(0,0,0,0.4)' },
-  modal: { backgroundColor: 'white', margin: 40, padding: 20, borderRadius: 8 },
-  modalItem: { fontSize: 18, paddingVertical: 8, textAlign: 'center' },
+  tabTextActive: {
+    fontSize: 24,
+    color: '#000',
+    marginBottom: 8,
+    fontFamily: 'Pretendard-Regular',
+    fontWeight: '600',
+  },
+  tabUnderline: { height: 1, backgroundColor: '#ccc', marginTop: 4, marginBottom: 30 },
+  dropdownContainer: {
+    flexDirection: 'row',
+    gap: 12,
+    marginBottom: 20,
+  },
+  list: {
+    paddingBottom: 20,
+    rowGap: 20,
+  },
+  modalOverlay: {
+    flex: 1,
+    justifyContent: 'center',
+    backgroundColor: 'rgba(0,0,0,0.4)',
+  },
+  modal: {
+    backgroundColor: 'white',
+    margin: 40,
+    padding: 20,
+    borderRadius: 8,
+  },
+  modalItem: {
+    fontSize: 18,
+    paddingVertical: 8,
+    textAlign: 'center',
+  },
 });
 
 export default ArchiveHomeScreen;

@@ -1,9 +1,12 @@
 import React, { useState, useEffect, useRef } from 'react';
 import {
   View, Text, TextInput, TouchableOpacity, FlatList,
-  StyleSheet, KeyboardAvoidingView, Platform
+  StyleSheet, KeyboardAvoidingView, Platform,
+  Image
 } from 'react-native';
-import Icon from 'react-native-vector-icons/Feather';
+import leftarray from '../../assets/icons/leftarray.png';
+import menu from '../../assets/icons/menu.png';
+import send from '../../assets/icons/send.png';
 import api from '../../api/axios';
 
 const ChatScreen = ({ goBack }) => {
@@ -90,10 +93,10 @@ const ChatScreen = ({ goBack }) => {
       {/* 헤더 */}
       <View style={styles.header}>
         <TouchableOpacity onPress={goBack}>
-          <Icon name="arrow-left" size={20} color="#fff" />
+          <Image source={leftarray} style={styles.leftIcon} />
         </TouchableOpacity>
         <Text style={styles.headerTitle}>Chat with Mind</Text>
-        <Icon name="menu" size={20} color="#fff" />
+        <Image source={menu} style={styles.rightIcon} />
       </View>
 
       <Text style={styles.dateLabel}>
@@ -133,7 +136,7 @@ const ChatScreen = ({ goBack }) => {
           />
         </View>
         <TouchableOpacity style={styles.sendButton} onPress={sendMessage}>
-          <Icon name="send" size={20} color="#fff" />
+          <Image source={send} style={styles.plane} />
         </TouchableOpacity>
       </View>
     </KeyboardAvoidingView>
@@ -145,13 +148,19 @@ const styles = StyleSheet.create({
   header: {
     flexDirection: 'row',
     backgroundColor: '#EB6A39',
-    paddingHorizontal: 16,
-    paddingVertical: 14,
+    paddingTop:35,
+    paddingHorizontal: 18,
+    paddingVertical:20,
     alignItems: 'center',
     justifyContent: 'space-between',
   },
+  leftIcon: {
+    width: 24,
+    height: 24,
+  },
   headerTitle: {
-    fontSize: 16,
+    fontSize: 24,
+    fontFamily: 'Pretendard-Regular',
     fontWeight: 'bold',
     color: '#fff',
   },
@@ -193,14 +202,14 @@ const styles = StyleSheet.create({
     bottom: 0,
     flexDirection: 'row',
     alignItems: 'center',
-    backgroundColor: '#F9F6F3',
-    paddingHorizontal: 12,
-    paddingVertical: 8,
+    backgroundColor: '#FFFFFF',
+    paddingHorizontal: 18,
+    paddingVertical: 20,
   },
   inputBox: {
     flex: 1,
-    backgroundColor: '#EFEFEF',
-    borderRadius: 24,
+    backgroundColor: '#F4F4F4',
+    borderRadius: 28,
     paddingHorizontal: 16,
     paddingVertical: 8,
     marginRight: 8,

@@ -21,7 +21,7 @@ const DiaryTabView = ({ entry = 'default', exitDiary }) => {
     case 'Splash':
       return <DiarySplashScreen goTo={goTo} />;
     case 'Drawing':
-      return <DrawingScreen goTo={goTo} />;
+      return <DrawingScreen goTo={goTo} exitDiary={exitDiary} {...screenProps} />;
     case 'Loading':
       return <LoadingScreen goTo={goTo} {...screenProps} />;
     case 'Result':
@@ -29,7 +29,13 @@ const DiaryTabView = ({ entry = 'default', exitDiary }) => {
     case 'Recommend':
       return <RecommendationScreen goTo={goTo} exitDiary={exitDiary} {...screenProps} />;
     case 'EmotionSelect':
-      return <EmotionSelectScreen goTo={goTo} exitDiary={exitDiary} {...screenProps} />;
+      return (
+        <EmotionSelectScreen
+          goTo={goTo}
+          recordId={screenProps.recordId}
+          exitDiary={exitDiary}
+        />
+      );
     default:
       return <DiarySplashScreen goTo={goTo} />;
   }

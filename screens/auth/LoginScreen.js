@@ -1,7 +1,7 @@
 import React, { useState } from 'react';
 import {
   View, Text, TextInput, TouchableOpacity, StyleSheet, Image,
-  Alert, Dimensions
+  Alert, Dimensions,ScrollView, KeyboardAvoidingView
 } from 'react-native';
 import { getAuth, signInWithEmailAndPassword } from 'firebase/auth';
 import { firebaseApp } from '../../firebaseConfig';
@@ -10,8 +10,7 @@ import api from '../../api/axios';
 import useAuthStore from '../../store/useAuthStore';
 
 const auth = getAuth(firebaseApp);
-const { width, height } = Dimensions.get('window');
-
+const { width, height } = Dimensions.get('screen');
 /**
  * @param {{ navigate: (screen: 'SignUp' | 'Splash') => void }} props
  */
@@ -35,73 +34,83 @@ const LoginScreen = ({ navigate }) => {
   };
 
   return (
-    <View style={styles.container}>
-      <Text style={styles.welcome}>Welcome!</Text>
-      <Text style={styles.subtitle}>Please enter your details to start with us.</Text>
+    <KeyboardAvoidingView
+      style={{ flex: 1 }}
+      behavior={Platform.OS === 'ios' ? 'padding' : undefined}
+    >
+      <ScrollView contentContainerStyle={styles.container}>
+        <View>
+          <Text style={styles.welcome}>Welcome!</Text>
+          <Text style={styles.subtitle}>Please enter your details to start with us.</Text>
 
-      <TouchableOpacity style={styles.googleButton}>
-        <Image
-          source={require('../../assets/images/google-logo.png')}
-          style={styles.googleLogo}
-        />
-      </TouchableOpacity>
+          <TouchableOpacity style={styles.googleButton}>
+            <Image
+              source={require('../../assets/images/google-logo.png')}
+              style={styles.googleLogo}
+            />
+          </TouchableOpacity>
 
-      <View style={styles.orContainer}>
-        <View style={styles.line} />
-        <Text style={styles.orText}>OR</Text>
-        <View style={styles.line} />
-      </View>
-
-      <View style={styles.inputContainer}>
-        <Text style={styles.inputLabel}>Email Address</Text>
-        <TextInput
-          value={email}
-          onChangeText={setEmail}
-          autoCapitalize="none"
-          keyboardType="email-address"
-          style={styles.input}
-        />
-      </View>
-      <View style={styles.inputContainer}>
-        <Text style={styles.inputLabel}>Password</Text>
-        <TextInput
-          value={password}
-          onChangeText={setPassword}
-          secureTextEntry
-          style={styles.input}
-        />
-      </View>
-
-      <View style={styles.rememberRow}>
-        <TouchableOpacity onPress={() => setRemember(!remember)} style={styles.checkboxContainer}>
-          <View style={[styles.checkbox, remember && styles.checkboxChecked]}>
-            {remember && <Text style={styles.checkmark}>✓</Text>}
+          <View style={styles.orContainer}>
+            <View style={styles.line} />
+            <Text style={styles.orText}>OR</Text>
+            <View style={styles.line} />
           </View>
-          <Text style={styles.rememberText}>Remember me</Text>
-        </TouchableOpacity>
-        <TouchableOpacity>
-          <Text style={styles.forgot}>Forgot Password?</Text>
-        </TouchableOpacity>
-      </View>
 
-      <TouchableOpacity style={styles.loginButton} onPress={handleLogin}>
-        <Text style={styles.loginText}>Log In</Text>
-      </TouchableOpacity>
+          <View style={styles.inputContainer}>
+            <Text style={styles.inputLabel}>Email Address</Text>
+            <TextInput
+              value={email}
+              onChangeText={setEmail}
+              autoCapitalize="none"
+              keyboardType="email-address"
+              style={styles.input}
+            />
+          </View>
+          <View style={styles.inputContainer}>
+            <Text style={styles.inputLabel}>Password</Text>
+            <TextInput
+              value={password}
+              onChangeText={setPassword}
+              secureTextEntry
+              style={styles.input}
+            />
+          </View>
 
-      <View style={styles.signupRow}>
-        <Text>Don’t have an account? </Text>
-        <TouchableOpacity onPress={() => navigate('SignUp')}>
-          <Text style={styles.signup}>Sign Up</Text>
-        </TouchableOpacity>
-      </View>
-    </View>  
+          <View style={styles.rememberRow}>
+            <TouchableOpacity onPress={() => setRemember(!remember)} style={styles.checkboxContainer}>
+              <View style={[styles.checkbox, remember && styles.checkboxChecked]}>
+                {remember && <Text style={styles.checkmark}>✓</Text>}
+              </View>
+              <Text style={styles.rememberText}>Remember me</Text>
+            </TouchableOpacity>
+            <TouchableOpacity>
+              <Text style={styles.forgot}>Forgot Password?</Text>
+            </TouchableOpacity>
+          </View>
+        </View>
+
+          <TouchableOpacity style={styles.loginButton} onPress={handleLogin}>
+            <Text style={styles.loginText}>Log In</Text>
+          </TouchableOpacity>
+
+          <View style={styles.signupRow}>
+            <Text>Don’t have an account? </Text>
+            <TouchableOpacity onPress={() => navigate('SignUp')}>
+              <Text style={styles.signup}>Sign Up</Text>
+            </TouchableOpacity>
+          </View> 
+      </ScrollView>
+    </KeyboardAvoidingView>
   );
 };
 
 const styles = StyleSheet.create({
+  scrollContainer: {
+    paddingBottom: height * 0.05,
+  },
   container: {
     flex: 1,
-    paddingTop: height * 0.12, // 상단에서 12%부터 시작
+    paddingTop: height * 0.10, 
     paddingHorizontal: 24,
     backgroundColor: '#F4F0ED',
   },
@@ -115,10 +124,10 @@ const styles = StyleSheet.create({
     marginBottom: height * 0.0065,
   },
   subtitle: {
+    fontFamily: 'Pretendard-Regular',
     fontSize: 16,
     color: 'rgba(51, 51, 51, 0.7)',
     textAlign: 'center',
-    alignSelf: 'center',
     marginBottom: height * 0.0296,
     lineHeight: 19,
   },
@@ -128,7 +137,7 @@ const styles = StyleSheet.create({
     marginTop: height * 0.035,
   },
   googleLogo: {
-    width: width * 0.08,  // 40 / 375 = 0.106 (375 기준 비율)
+    width: width * 0.08, 
     height: width * 0.08,
     resizeMode: 'contain',
   },
@@ -143,21 +152,23 @@ const styles = StyleSheet.create({
     backgroundColor: '#ccc',
   },
   orText: {
-    marginHorizontal: 8,
-    color: '#888',
+    marginHorizontal: 10,
+    color: '#2E2E2E',
   },
   inputContainer: {
-    marginBottom: height * 0.0197,
+    marginBottom: height * 0.02,
   },
   inputLabel: {
-    fontSize: 14,
-    color: '#888',
-    marginBottom: 6,
+    fontFamily: 'Pretendard-Regular',
+    fontSize: 13,
+    color: '#2E2E2E',
+    marginBottom: 3,
   },
   input: {
-    borderBottomWidth: 1,
+    fontFamily: 'Pretendard-Regular',
+    borderBottomWidth: 2,
     borderColor: '#ccc',
-    paddingVertical: 8,
+    paddingVertical: 10,
     fontSize: 16,
     color: '#333',
   },
@@ -165,7 +176,7 @@ const styles = StyleSheet.create({
     flexDirection: 'row',
     justifyContent: 'space-between',
     alignItems: 'center',
-    marginBottom: height * 0.0345,
+    marginBottom: height * 0.04,
   },
   checkboxContainer: {
     flexDirection: 'row',
@@ -180,6 +191,7 @@ const styles = StyleSheet.create({
     alignItems: 'center',
     justifyContent: 'center',
     marginRight: 8,
+    color: '#B9B6B4',
   },
   checkboxChecked: {
     backgroundColor: '#d97706',
@@ -191,32 +203,32 @@ const styles = StyleSheet.create({
     lineHeight: 18, // 세로 가운데 정렬 자연스럽게
   },
   rememberText: {
-    color: '#d97706',
-    fontSize: 14,
+    fontFamily: 'Pretendard-Regular',
+    color: '#FF5900',
+    fontSize: 13,
     fontWeight: '500',
   },
   forgot: {
-    color: '#333',
-  },
-  bottomSection: {
-    position: 'absolute',
-    bottom: height * 0.08, // 하단에서 8% 위
-    left: 24,
-    right: 24,
+    color: '#2E2E2E',
+    fontFamily: 'Pretendard-Regular',
+    fontSize: 13,
   },
   loginButton: {
+    marginTop: height * 0.12,
     backgroundColor: '#FFF',
     paddingVertical: height * 0.025,
     borderRadius: 999,
     alignItems: 'center',
-    marginBottom: height * 0.0197,
+    marginBottom: height * 0.02,
   },
   loginText: {
     color: '#2E2E2E',
-    fontSize: 16,
+    fontSize: 17.7,
     fontWeight: 'bold',
+    fontFamily: 'Pretendard-Regular',
   },
   signupRow: {
+    marginTop: height * 0.01,
     color: '#2E2E2E',
     flexDirection: 'row',
     justifyContent: 'center',

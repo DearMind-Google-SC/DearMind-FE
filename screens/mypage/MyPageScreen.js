@@ -1,14 +1,35 @@
-import React from 'react';
-import { View, Text, StyleSheet, Image, TouchableOpacity } from 'react-native';
-import { useNavigation } from '@react-navigation/native';
-import api from '../../api/axios'; // api.js에서 api를 import합니다.
+import React, { useEffect, useState } from 'react';
+import {
+  View,
+  Text,
+  StyleSheet,
+  Image,
+  TouchableOpacity,
+  Dimensions,
+  ScrollView,
+  SafeAreaView,
+} from 'react-native';
+import api from '../../api/axios';
+import setting from '../../assets/icons/setting.png';
+import rightArrow from '../../assets/icons/right.png';
 
-const MyPageScreen = () => {
-  const navigation = useNavigation();
-  const [quote, setQuote] = useState('');
+const { width } = Dimensions.get('window');
+
+const MyPageScreen = ({ goTo }) => {
+  const [quote, setQuote] = useState('Something went wrong');
   const [author, setAuthor] = useState('');
+  const [userName, setUserName] = useState('Jun'); // 기본값 Jun
 
   useEffect(() => {
+    const fetchUserInfo = async () => {
+      try {
+        const res = await api.get('/auth/me');
+        if (res.data?.name) setUserName(res.data.name);
+      } catch (err) {
+        console.error('사용자 정보 조회 실패:', err);
+      }
+    };
+
     const fetchQuote = async () => {
       try {
         const res = await api.get('/emotion-quote/today');
@@ -20,67 +41,141 @@ const MyPageScreen = () => {
       }
     };
 
+    fetchUserInfo();
     fetchQuote();
   }, []);
 
+
   return (
-    <View style={styles.container}>
-      {/* 프로필 헤더 */}
-      <View style={styles.profileSection}>
-        <Image source={{ uri: 'https://via.placeholder.com/150' }} style={styles.profileImage} />
-        <Text style={styles.name}>Jun</Text>
-        <TouchableOpacity
-          style={styles.settingButton}
-          onPress={() => navigation.navigate('SettingsScreen')}
-        >
-          <Text style={styles.settingText}>⚙</Text>
+    <SafeAreaView style={styles.safeArea}>
+      <ScrollView contentContainerStyle={styles.scrollContent}>
+        <View style={styles.profileContainer}>
+          <Image
+            source={{ uri: 'https://i.pinimg.com/originals/46/d6/38/46d638b0018a29d734eac03973536c68.jpg' }}
+            style={styles.profileImage}
+          />
+          <Text style={styles.name}> {userName} </Text>
+          <TouchableOpacity style={styles.settingButton} onPress={() => goTo('Settings')}>
+            <Image source={setting} style={styles.settingIcon} />
+          </TouchableOpacity>
+        </View>
+
+        <View style={styles.quoteCard}>
+          <Text style={styles.quoteText} numberOfLines={3}>
+            “{quote}”
+          </Text>
+          {author ? <Text style={styles.authorText}>- {author} -</Text> : null}
+        </View>
+
+        {/* 메뉴 */}
+        <TouchableOpacity style={[styles.menuItem,styles.menuItemFirst]} onPress={() => goTo('MoodBooster')}>
+          <Text style={styles.menuText}>My Mood Boosters</Text>
+          <Image source={rightArrow} style={styles.rightArrow} />
         </TouchableOpacity>
-      </View>
-
-      {/* 명언 카드 */}
-      <View style={styles.quoteCard}>
-        <Text style={styles.quote}>{`“${quote}”`}</Text>
-        {author ? <Text style={styles.author}>{`- ${author} -`}</Text> : null}
-      </View>
-
-      {/* 메뉴 목록 */}
-      <TouchableOpacity style={styles.menuItem} onPress={() => navigation.navigate('MainScreen')}>
-        <Text style={styles.menuText}>My Mood Boosters</Text>
-      </TouchableOpacity>
-
-      <TouchableOpacity style={styles.menuItem} onPress={() => navigation.navigate('ArchiveHomeScreen')}>
-        <Text style={styles.menuText}>My Mood Archives</Text>
-      </TouchableOpacity>
-
-      <TouchableOpacity style={styles.menuItem} onPress={() => navigation.navigate('DiarySplashScreen')}>
-        <Text style={styles.menuText}>My Mood Diaries</Text>
-      </TouchableOpacity>
-    </View>
+        <TouchableOpacity style={styles.menuItem} onPress={() => goTo('MoodArchive')}>
+          <Text style={styles.menuText}>My Mood Archives</Text>
+          <Image source={rightArrow} style={styles.rightArrow} />
+        </TouchableOpacity>
+        <TouchableOpacity style={styles.menuItem} onPress={() => goTo('MoodDiary')}>
+          <Text style={styles.menuText}>My Mood Diaries</Text>
+          <Image source={rightArrow} style={styles.rightArrow} />
+        </TouchableOpacity>
+      </ScrollView>
+    </SafeAreaView>
   );
 };
 
 const styles = StyleSheet.create({
-  container: { flex: 1, backgroundColor: '#fff', padding: 16 },
-  profileSection: { alignItems: 'center', marginBottom: 20 },
-  profileImage: { width: 120, height: 120, borderRadius: 60, marginBottom: 8 },
-  name: { fontSize: 20, fontWeight: 'bold' },
-  settingButton: { position: 'absolute', top: 0, right: 10, padding: 8 },
-  settingText: { fontSize: 20 },
-  quoteCard: {
-    backgroundColor: '#FEC868',
-    borderRadius: 12,
-    padding: 16,
+  safeArea: {
+    flex: 1,
+    backgroundColor: '#F8F4F1',
+  },
+  scrollContent: {
+    paddingHorizontal: width * 0.06,
+    paddingBottom: 40,
+  },
+  profileContainer: {
+    height: width * 0.65,
     marginBottom: 24,
+    position: 'relative',
+  },
+  profileImage: {
+    width: '120%',
+    marginLeft: -width * 0.06,
+    height: width * 0.65,
+  },
+  name: {
+    position: 'absolute',
+    textAlign: 'center',
+    bottom: 20,
+    fontSize: 33,
+    fontWeight: '600',
+    color: '#fff',
+    fontFamily: 'Pretendard-Regular',
+    alignSelf: 'center',
+  },
+  settingButton: {
+    position: 'absolute',
+    bottom: 20,
+    right: 20,
+  },
+  settingIcon: {
+    width: 35,
+    height: 35,
+    color: '#B9B6B4',
+  },
+  quoteCard: {
+    backgroundColor: '#F27838',
+    borderRadius: 12,
+    height: 220,
+    paddingHorizontal: 16,
+    marginBottom: 50,
     alignItems: 'center',
+    justifyContent: 'center',
   },
-  quote: { fontSize: 14, color: '#333', textAlign: 'center', marginBottom: 8 },
-  author: { fontSize: 12, fontWeight: 'bold' },
+  quoteText: {
+    fontSize: 20,
+    color: '#fff',
+    fontFamily: 'Recoleta',
+    textAlign: 'center',
+    lineHeight: 30,
+    maxWidth: '90%',
+    fontWeight: '400',
+    marginBottom: 8,
+  },
+  authorText: {
+    fontSize: 16,
+    color: '#fff',
+    fontFamily: 'Recoleta',
+    fontWeight: '400',
+    marginTop: 8,
+  },
+  menuItemFirst: {
+    borderTopWidth: 1.3,
+    borderColor: '#B9B6B4',
+  },
   menuItem: {
-    borderBottomWidth: 1,
-    borderColor: '#eee',
-    paddingVertical: 16,
+    borderBottomWidth: 1.3,
+    borderColor: '#B9B6B4',
+    paddingVertical: 20,
+    position: 'relative',
   },
-  menuText: { fontSize: 16, color: '#333' },
+  menuText: {
+    fontSize: 22,
+    color: '#2E2E2E',
+    fontWeight: '500',
+    lineHeight: 32,
+    fontFamily: 'Pretendard-Regular',
+  },
+  rightArrow: {
+    position: 'absolute',
+    right: 20,
+    top: '50%',
+    transform: [{ translateY: +5 }],
+    width: 30,
+    height: 30,
+    tintColor: '#B9B6B4',
+  },
 });
 
 export default MyPageScreen;

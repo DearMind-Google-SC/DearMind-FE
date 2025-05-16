@@ -1,12 +1,17 @@
 import React from 'react';
-import { View, Text, Image, StyleSheet, TouchableOpacity } from 'react-native';
+import { View, Text, Image, StyleSheet, TouchableOpacity, Dimensions } from 'react-native';
+
+const CARD_HEIGHT = Dimensions.get('window').height / 3.6
+console.log('CARD_HEIGHT:', CARD_HEIGHT);
 
 const ArchiveCard = ({ image, date, summary, onPress }) => {
   return (
     <TouchableOpacity style={styles.card} onPress={onPress}>
-      <Image source={image} style={styles.image} resizeMode="cover" />
-      <Text style={styles.date}>{date}</Text>
-      <Text style={styles.summary} numberOfLines={2}>{summary}</Text>
+      <Image source={image} style={styles.image} resizeMode="contain" />
+      <View style={styles.textBox}>
+        <Text style={styles.date}>{date}</Text>
+        <Text style={styles.summary} numberOfLines={2}>{summary}</Text>
+      </View>
     </TouchableOpacity>
   );
 };
@@ -14,30 +19,36 @@ const ArchiveCard = ({ image, date, summary, onPress }) => {
 const styles = StyleSheet.create({
   card: {
     flex: 1,
-    margin: 8,
-    borderRadius: 8,
-    backgroundColor: '#fff',
+    height: CARD_HEIGHT,
+    borderRadius: 14,
+    backgroundColor: '#F7F5F3',
     overflow: 'hidden',
-    elevation: 2,
-    shadowColor: '#000',
-    shadowOffset: { width: 0, height: 2 },
-    shadowOpacity: 0.1,
-    shadowRadius: 4,
+    margin: 6,
+    borderWidth: 1,
+    borderColor: '#E0DCD6',
   },
   image: {
     width: '100%',
-    height: 120,
+    height: '70%',
+    backgroundColor: '#F7F5F3',
+  },
+  textBox: {
+    flex: 1,
+    paddingVertical: 6,
+    paddingHorizontal: 5,
   },
   date: {
-    fontWeight: 'bold',
-    marginTop: 8,
-    marginHorizontal: 8,
+    fontSize: 28,
+    fontWeight: '700',
+    color: '#2E2E2E',
+    marginBottom: 2,
+    lineHeight: 28,
+    fontFamily: 'Pretendard-Regular',
   },
   summary: {
-    color: '#444',
-    fontSize: 14,
-    marginHorizontal: 8,
-    marginBottom: 12,
+    fontSize: 13,
+    color: '#555',
+    lineHeight: 17,
   },
 });
 

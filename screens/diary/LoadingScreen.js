@@ -1,16 +1,16 @@
 import React, { useEffect, useState } from 'react';
-import { View, Text, StyleSheet, Animated } from 'react-native';
+import { View, Text, StyleSheet, Animated, Image } from 'react-native';
 import api from '../../api/axios';
+import leftarray from '../../assets/icons/leftarray.png';
 
 const LoadingScreen = ({ goTo, imageData, text }) => {
   const [progress, setProgress] = useState(new Animated.Value(0));
   const [percentage, setPercentage] = useState(0);
 
   useEffect(() => {
-    // 애니메이션: 0% → 100%로 자연스럽게 증가
     Animated.timing(progress, {
       toValue: 1,
-      duration: 5000, // 5초 정도 걸리게 설정
+      duration: 8000,
       useNativeDriver: false,
     }).start();
 
@@ -22,40 +22,51 @@ const LoadingScreen = ({ goTo, imageData, text }) => {
         }
         return prev + 1;
       });
-    }, 50); // 50ms마다 +1%
+    }, 80);
 
     return () => clearInterval(interval);
   }, []);
 
   useEffect(() => {
-    const sendData = async () => {
-      try {
-        const res = await api.post('/diary', {
-          image: imageData,
-          text,
-        });
+      const sendData = async () => {
+        let savedRecordId = null;
 
-        const { emotionType, suggestions = [], text: originalText } = res.data;
+        try {
+          const res = await api.post('/diary', {
+            image: imageData,
+            text,
+          });
 
-        // 1초 정도 딜레이 후 결과 화면으로 이동
-      setTimeout(() => {
-        goTo('Result', {
-          emotion: emotionType || 'UNKNOWN',
-          suggestions,
-          originalText,
-        });
-      }, 500);
-      } catch (err) {
-        console.error('분석 실패:', err);
-        // 실패 시에도 진행은 되게 하기
-        setTimeout(() => {
-          goTo('Result', { emotion: 'UNKNOWN', suggestions: [], originalText: text });
-        }, 1000);
-      }
-    };
+          const { emotionType, suggestions = [], text: originalText, recordId } = res.data;
+          savedRecordId = recordId;
 
-    sendData();
-  }, []);
+          console.log('백엔드 결과값:', res.data);
+
+          setTimeout(() => {
+            progress.setValue(1);
+            goTo('Result', {
+              emotion: emotionType || 'UNKNOWN',
+              suggestions,
+              originalText,
+              recordId,
+            });
+          }, 500);
+        } catch (err) {
+          console.error('분석 실패:', err);
+
+          setTimeout(() => {
+            goTo('Result', {
+              emotion: 'UNKNOWN',
+              suggestions: [],
+              originalText: text,
+              recordId: savedRecordId || '', // fallback에도 안전하게 넘김
+            });
+          }, 500);
+        }
+      };
+
+      sendData();
+    }, []);
 
   const barWidth = progress.interpolate({
     inputRange: [0, 1],
@@ -64,7 +75,8 @@ const LoadingScreen = ({ goTo, imageData, text }) => {
 
   return (
     <View style={styles.container}>
-      <Text style={styles.subText}>Mind is preparing for a diary reply and a picture.</Text>
+      <Image source={leftarray} style={styles.leftIcon} />
+      <Text style={styles.subText}>{`Just a moment,\nI’m looking into your feelings.`}</Text>
       <Text style={styles.percent}>{percentage}%</Text>
       <View style={styles.progressBar}>
         <Animated.View style={[styles.fill, { width: barWidth }]} />
@@ -81,28 +93,43 @@ const styles = StyleSheet.create({
     alignItems: 'center',
     paddingHorizontal: 24,
   },
+  leftIcon: {
+    position: 'absolute',
+    top: 40,
+    left: 20,
+    zIndex: 10,
+    width: 30,
+    height: 30,
+    marginBottom: 20,
+    marginLeft: 10,
+    color: '#2E2E2E',
+  },
   subText: {
-    fontSize: 16,
-    color: '#333',
+    fontSize: 26,
+    color: '#2e2e2e',
     marginBottom: 20,
     textAlign: 'center',
+    lineHeight: 30,
+    fontWeight: '500',
   },
   percent: {
-    fontSize: 48,
-    fontWeight: 'bold',
-    color: '#EA5E28',
+    fontSize: 200,
+    fontWeight: '900',
+    color: '#ff5900',
     marginBottom: 16,
+    fontFamily: 'Pretendard-Bold',
+    letterSpacing: -15,
   },
   progressBar: {
     width: '80%',
-    height: 12,
-    borderRadius: 6,
-    backgroundColor: '#ddd',
+    height: 20,
+    borderRadius: 100,
+    backgroundColor: '#fefefe',
     overflow: 'hidden',
   },
   fill: {
     height: '100%',
-    backgroundColor: '#EA5E28',
+    backgroundColor: '#b9b6b4',
   },
 });
 
