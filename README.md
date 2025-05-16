@@ -1,6 +1,6 @@
 # DearMind-FE
 
-NestJS Frontend Server for **DearMind**, a digital art therapy service built for the **Google Solution Challenge 2025**.
+ReactNative Frontend Server for **DearMind**, a digital art therapy service built for the **Google Solution Challenge 2025**.
 
 ---
 
