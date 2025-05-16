@@ -21,14 +21,6 @@ This repository contains the **React-Native frontend server**, which supports:
 | Layer          | Technology |
 |----------------|------------|
 | Frontend       | React-Native |
-| Authentication | Firebase Authentication |
-| Database       | Firestore (Firebase) |
-| File Storage   | Firebase Storage |
-| AI Integration | Vertex AI (Gemini + Imagen) |
-| 3rd Party API  | Google Maps / Places API |
-| Deployment     | Render + GitHub Actions |
-| Docs           | Swagger |
-
 ---
 
 ## 🚀 Android Setting
